@@ -11,7 +11,10 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="com.android.vending.CHECK_LICENSE" />
 
-    <application>
+    <application
+        android:extractNativeLibs="true"
+        android:largeHeap="true"
+        android:hardwareAccelerated="true">
         <activity
             android:name="com.faceAI.face_ai_sdk.SysCamera.verify.FaceVerificationActivity"
             android:exported="false"
