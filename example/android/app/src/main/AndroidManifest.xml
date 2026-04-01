@@ -3,7 +3,7 @@
     <uses-feature android:name="android.hardware.camera" android:required="true" />
     <application
         android:label="face_ai_sdk_example"
-        android:name="${applicationName}"
+        android:name=".FaceAiSdkExampleApplication"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
