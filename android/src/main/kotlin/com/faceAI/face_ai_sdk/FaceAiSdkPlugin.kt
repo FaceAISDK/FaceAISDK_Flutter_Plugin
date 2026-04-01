@@ -102,11 +102,20 @@ class FaceAiSdkPlugin :
         }
     }
 
+    private fun requireInitialized(result: Result): Boolean {
+        if (!isSDKInitialized) {
+            result.error("NOT_INITIALIZED", "SDK not initialized, call initializeSDK first", null)
+            return false
+        }
+        return true
+    }
+
     private fun handleStartVerification(call: MethodCall, result: Result) {
         val currentActivity = activity ?: run {
             result.error("NO_ACTIVITY", "Plugin not attached to an Activity", null)
             return
         }
+        if (!requireInitialized(result)) return
         if (pendingResult != null) {
             result.error("ALREADY_ACTIVE", "Another operation is in progress", null)
             return
@@ -137,6 +146,7 @@ class FaceAiSdkPlugin :
             result.error("NO_ACTIVITY", "Plugin not attached to an Activity", null)
             return
         }
+        if (!requireInitialized(result)) return
         if (pendingResult != null) {
             result.error("ALREADY_ACTIVE", "Another operation is in progress", null)
             return
@@ -159,6 +169,7 @@ class FaceAiSdkPlugin :
             result.error("NO_ACTIVITY", "Plugin not attached to an Activity", null)
             return
         }
+        if (!requireInitialized(result)) return
         if (pendingResult != null) {
             result.error("ALREADY_ACTIVE", "Another operation is in progress", null)
             return
@@ -186,6 +197,7 @@ class FaceAiSdkPlugin :
             result.error("NO_ACTIVITY", "Plugin not attached to an Activity", null)
             return
         }
+        if (!requireInitialized(result)) return
         if (pendingResult != null) {
             result.error("ALREADY_ACTIVE", "Another operation is in progress", null)
             return
@@ -216,12 +228,12 @@ class FaceAiSdkPlugin :
         val result = pendingResult ?: return false
         pendingResult = null
 
-        if (data == null) {
+        if (resultCode != Activity.RESULT_OK || data == null) {
             result.success(mapOf("code" to 0, "msg" to "cancelled"))
             return true
         }
 
-        val faceImageStr = loadFaceLogImage()
+        val faceImageStr = loadFaceLogImage(requestCode)
 
         when (requestCode) {
             VERIFICATION_REQUEST -> {
@@ -257,17 +269,17 @@ class FaceAiSdkPlugin :
         return true
     }
 
-    private fun loadFaceLogImage(): String? {
+    private fun loadFaceLogImage(requestCode: Int): String? {
         val ctx = activity?.applicationContext ?: return null
         val logDir = ctx.filesDir.path + "/FaceAI/Log/"
 
-        val verifyFile = File(logDir, "verifyBitmap")
-        val liveFile = File(logDir, "liveBitmap")
-        val targetFile = when {
-            verifyFile.exists() -> verifyFile
-            liveFile.exists() -> liveFile
+        val fileName = when (requestCode) {
+            VERIFICATION_REQUEST -> "verifyBitmap"
+            LIVENESS_REQUEST -> "liveBitmap"
             else -> return null
         }
+        val targetFile = File(logDir, fileName)
+        if (!targetFile.exists()) return null
 
         return when (pendingFormat) {
             "filePath" -> targetFile.absolutePath
