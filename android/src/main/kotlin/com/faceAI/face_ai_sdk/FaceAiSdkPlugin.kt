@@ -15,6 +15,10 @@ import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry
 import com.faceAI.face_ai_sdk.FaceSDKConfig
 import com.ai.face.core.engine.FaceAISDKEngine
+import android.util.Log
+import androidx.camera.camera2.Camera2Config
+import androidx.camera.core.CameraXConfig
+import androidx.camera.lifecycle.ProcessCameraProvider
 import com.faceAI.face_ai_sdk.SysCamera.verify.FaceVerificationActivity
 import com.faceAI.face_ai_sdk.SysCamera.verify.LivenessDetectActivity
 import com.faceAI.face_ai_sdk.SysCamera.addFace.AddFaceFeatureActivity
@@ -96,6 +100,16 @@ class FaceAiSdkPlugin :
         }
         try {
             val appContext = currentActivity.applicationContext
+            // Configure CameraX if not already configured by host app
+            try {
+                ProcessCameraProvider.configureInstance(
+                    CameraXConfig.Builder.fromConfig(Camera2Config.defaultConfig())
+                        .setMinimumLoggingLevel(Log.ERROR)
+                        .build()
+                )
+            } catch (_: IllegalStateException) {
+                // Already configured
+            }
             FaceSDKConfig.init(appContext)
             // Pre-initialize the native face AI engine to load model before any Activity uses it
             FaceAISDKEngine.getInstance(appContext)
