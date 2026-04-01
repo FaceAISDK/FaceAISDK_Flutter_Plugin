@@ -13,19 +13,19 @@
 
     <application>
         <activity
-            android:name="com.faceAI.demo.SysCamera.verify.FaceVerificationActivity"
+            android:name="com.faceAI.face_ai_sdk.SysCamera.verify.FaceVerificationActivity"
             android:exported="false"
             android:launchMode="singleTop"
             android:theme="@style/Theme.FaceAISDK.Fullscreen" />
 
         <activity
-            android:name="com.faceAI.demo.SysCamera.verify.LivenessDetectActivity"
+            android:name="com.faceAI.face_ai_sdk.SysCamera.verify.LivenessDetectActivity"
             android:exported="false"
             android:launchMode="singleTop"
             android:theme="@style/Theme.FaceAISDK.Fullscreen" />
 
         <activity
-            android:name="com.faceAI.demo.SysCamera.addFace.AddFaceFeatureActivity"
+            android:name="com.faceAI.face_ai_sdk.SysCamera.addFace.AddFaceFeatureActivity"
             android:exported="false"
             android:theme="@style/FaceAITheme" />
     </application>

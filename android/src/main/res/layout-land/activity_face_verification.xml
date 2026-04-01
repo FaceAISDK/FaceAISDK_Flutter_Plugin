@@ -16,7 +16,7 @@
         android:layout_margin="123dp"/>
 
     <!-- 可以替换成你自己的UI样式,需要 FaceCoverView 源码已经暴露 -->
-    <com.faceAI.demo.base.view.FaceVerifyCoverView
+    <com.faceAI.face_ai_sdk.base.view.FaceVerifyCoverView
         android:id="@+id/face_cover"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

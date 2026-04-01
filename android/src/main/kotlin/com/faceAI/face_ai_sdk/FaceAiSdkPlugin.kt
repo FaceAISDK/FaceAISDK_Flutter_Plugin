@@ -13,10 +13,10 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry
-import com.faceAI.demo.FaceSDKConfig
-import com.faceAI.demo.SysCamera.verify.FaceVerificationActivity
-import com.faceAI.demo.SysCamera.verify.LivenessDetectActivity
-import com.faceAI.demo.SysCamera.addFace.AddFaceFeatureActivity
+import com.faceAI.face_ai_sdk.FaceSDKConfig
+import com.faceAI.face_ai_sdk.SysCamera.verify.FaceVerificationActivity
+import com.faceAI.face_ai_sdk.SysCamera.verify.LivenessDetectActivity
+import com.faceAI.face_ai_sdk.SysCamera.addFace.AddFaceFeatureActivity
 import java.io.ByteArrayOutputStream
 import java.io.File
 
