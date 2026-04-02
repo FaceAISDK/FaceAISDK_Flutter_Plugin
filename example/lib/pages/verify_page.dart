@@ -141,7 +141,9 @@ class _VerifyPageState extends State<VerifyPage> {
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
-          : ListView(
+          : RefreshIndicator(
+              onRefresh: _loadFaces,
+              child: ListView(
               padding: const EdgeInsets.fromLTRB(24, 16, 24, 120),
               children: [
                 // Header info
@@ -273,6 +275,7 @@ class _VerifyPageState extends State<VerifyPage> {
                     );
                   }),
               ],
+            ),
             ),
     );
   }

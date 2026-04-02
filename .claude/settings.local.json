@@ -43,7 +43,13 @@
       "Read(//c/Program Files/Java//**)",
       "Bash($JAR tf:*)",
       "Bash(/c/Program Files/Java/jdk-21/bin/javap.exe:*)",
-      "Bash(\"/c/Program Files/Java/jdk-21/bin/javap.exe\" -c -p /tmp/faceai_decompile/o0Oo0Ooo/o0OOO0o.class)"
+      "Bash(\"/c/Program Files/Java/jdk-21/bin/javap.exe\" -c -p /tmp/faceai_decompile/o0Oo0Ooo/o0OOO0o.class)",
+      "Bash(grep -r \"VerifyFaceModel\\\\|AddFaceByCameraModel\\\\|AddFaceByImageModel\\\\|VerifyTwoFaceSimiModel\" /Users/mac-kantor/Documents/GitHub/FaceAISDK_iOS/FaceAISDK_iOS --include=*.swift)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(pod install:*)",
+      "Bash(xcodebuild -workspace Runner.xcworkspace -scheme Runner -configuration Release -sdk iphoneos -arch arm64 CODE_SIGNING_ALLOWED=NO BUILD_LIBRARY_FOR_DISTRIBUTION=NO)",
+      "Bash(grep -r BUILD_LIBRARY_FOR_DISTRIBUTION /Users/mac-kantor/Documents/GitHub/FaceAISDK_Flutter_Plugin/example/ios/ --include=*.xcconfig)"
     ]
   }
 }

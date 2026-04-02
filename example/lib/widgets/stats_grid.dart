@@ -61,7 +61,7 @@ class _StatCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
         color: AppColors.surfaceContainerLow,
         borderRadius: BorderRadius.circular(16),
@@ -86,6 +86,7 @@ class _StatCard extends StatelessWidget {
               const SizedBox(height: 2),
               Text(
                 label,
+                maxLines: 2,
                 style: const TextStyle(
                   fontSize: 12,
                   color: AppColors.onSurfaceVariant,
@@ -94,6 +95,7 @@ class _StatCard extends StatelessWidget {
               if (sublabel.isNotEmpty)
                 Text(
                   sublabel,
+                  maxLines: 2,
                   style: TextStyle(
                     fontSize: 11,
                     color: AppColors.primary,
