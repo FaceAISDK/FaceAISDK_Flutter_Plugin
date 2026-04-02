@@ -20,7 +20,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.faceAI.face_ai_sdk_example"
+        applicationId = "com.ai.face.Demo"
         minSdk = 24
         targetSdk = 35
         versionCode = flutter.versionCode
@@ -31,9 +31,21 @@ android {
         noCompress += listOf("model", "bin", "param", "tfl")
     }
 
+    signingConfigs {
+        create("faceai") {
+            storeFile = file("FaceAIPublic")
+            storePassword = "FaceAIPublic"
+            keyAlias = "FaceAIPublic"
+            keyPassword = "FaceAIPublic"
+        }
+    }
+
     buildTypes {
+        debug {
+            signingConfig = signingConfigs.getByName("faceai")
+        }
         release {
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("faceai")
         }
     }
 }

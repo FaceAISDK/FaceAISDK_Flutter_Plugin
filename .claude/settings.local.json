@@ -34,7 +34,16 @@
       "WebFetch(domain:mvnrepository.com)",
       "Bash(gh api:*)",
       "WebFetch(domain:source.android.com)",
-      "Bash(flutter clean:*)"
+      "Bash(flutter clean:*)",
+      "Bash(unzip -l build/app/outputs/flutter-apk/app-debug.apk)",
+      "Bash(unzip -v build/app/outputs/flutter-apk/app-debug.apk)",
+      "Bash(/c/Program Files/Common Files/Oracle/Java/javapath/java.exe:*)",
+      "Bash(where jar:*)",
+      "Bash(where javap:*)",
+      "Read(//c/Program Files/Java//**)",
+      "Bash($JAR tf:*)",
+      "Bash(/c/Program Files/Java/jdk-21/bin/javap.exe:*)",
+      "Bash(\"/c/Program Files/Java/jdk-21/bin/javap.exe\" -c -p /tmp/faceai_decompile/o0Oo0Ooo/o0OOO0o.class)"
     ]
   }
 }

@@ -100,19 +100,7 @@ class FaceAiSdkPlugin :
         }
         try {
             val appContext = currentActivity.applicationContext
-            // Configure CameraX if not already configured by host app
-            try {
-                ProcessCameraProvider.configureInstance(
-                    CameraXConfig.Builder.fromConfig(Camera2Config.defaultConfig())
-                        .setMinimumLoggingLevel(Log.ERROR)
-                        .build()
-                )
-            } catch (_: IllegalStateException) {
-                // Already configured
-            }
             FaceSDKConfig.init(appContext)
-            // Pre-initialize the native face AI engine to load model before any Activity uses it
-            FaceAISDKEngine.getInstance(appContext)
             isSDKInitialized = true
             result.success("SDK initialized successfully")
         } catch (e: Exception) {
