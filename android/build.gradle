@@ -30,7 +30,7 @@ apply plugin: "kotlin-android"
 android {
     namespace = "com.faceAI.face_ai_sdk"
 
-    compileSdk = 35
+    compileSdk = 36
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -47,14 +47,21 @@ android {
     }
 
     defaultConfig {
-        minSdk = 21
+        minSdk = 24
+        targetSdk = 35
         ndk {
-            abiFilters 'arm64-v8a'
+            abiFilters 'armeabi-v7a', 'arm64-v8a'
         }
     }
 
+    aaptOptions {
+        noCompress "model", "bin", "param", "tfl"
+    }
+
     buildFeatures {
-        viewBinding true
+        buildConfig = true
+        dataBinding = true
+        viewBinding = true
     }
 
     dependencies {

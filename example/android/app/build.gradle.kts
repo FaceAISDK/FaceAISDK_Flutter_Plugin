@@ -8,7 +8,7 @@ plugins {
 android {
     namespace = "com.faceAI.face_ai_sdk_example"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = "29.0.14033849"
+    ndkVersion = flutter.ndkVersion
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -21,13 +21,14 @@ android {
 
     defaultConfig {
         applicationId = "com.faceAI.face_ai_sdk_example"
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
+        minSdk = 24
+        targetSdk = 35
         versionCode = flutter.versionCode
         versionName = flutter.versionName
-        ndk {
-            abiFilters += "arm64-v8a"
-        }
+    }
+
+    androidResources {
+        noCompress += listOf("model", "bin", "param", "tfl")
     }
 
     buildTypes {
