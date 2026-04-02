@@ -88,7 +88,7 @@ struct LivenessDetectView: View {
                 VStack {
                     Spacer()
                     CustomToastView(
-                        message: "\(viewModel.faceVerifyResult.tips)",
+                        message: FaceAILocalization.localizedTip(for: viewModel.faceVerifyResult.code, defaultPrefix: "LivenessDetect"),
                         style: toastStyle
                     )
                     .padding(.bottom, 77)
@@ -101,12 +101,20 @@ struct LivenessDetectView: View {
             if showLightHighDialog {
                 ZStack {
                     VStack(spacing: 22) {
-                        Text(viewModel.faceVerifyResult.tips)
+                        Text(FaceAILocalization.localizedTip(for: viewModel.faceVerifyResult.code, defaultPrefix: "LivenessDetect"))
                             .font(.system(size: 16).bold())
                             .fontWeight(.semibold)
                             .multilineTextAlignment(.center)
                             .foregroundColor(.black)
                             .padding(.horizontal, 25)
+
+                        if let uiImage = UIImage(named: "light_too_high", in: FaceAILocalization.bundle, compatibleWith: nil) {
+                            Image(uiImage: uiImage)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(maxHeight: 120)
+                                .padding(.horizontal, 1)
+                        }
 
                         Button(action: {
                             withAnimation {

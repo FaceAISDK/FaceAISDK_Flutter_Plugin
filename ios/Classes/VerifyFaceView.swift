@@ -85,8 +85,7 @@ struct VerifyFaceView: View {
             .navigationBarHidden(true)
 
             if showToast {
-                let displayTips = toastViewTips.isEmpty ? viewModel.faceVerifyResult.tips : toastViewTips
-                let displayMessage = (toastViewTips.isEmpty) ? "\(displayTips)" : displayTips
+                let displayMessage = toastViewTips.isEmpty ? FaceAILocalization.localizedTip(for: viewModel.faceVerifyResult.code, defaultPrefix: "VerifyFace") : toastViewTips
                 let isSuccess = viewModel.faceVerifyResult.similarity > threshold && viewModel.faceVerifyResult.liveness > 0.8
                 let toastStyle: ToastStyle = isSuccess ? .success : .failure
 
@@ -106,12 +105,20 @@ struct VerifyFaceView: View {
             if showLightHighDialog {
                 ZStack {
                     VStack(spacing: 22) {
-                        Text(viewModel.faceVerifyResult.tips)
+                        Text(FaceAILocalization.localizedTip(for: viewModel.faceVerifyResult.code, defaultPrefix: "VerifyFace"))
                             .font(.system(size: 16).bold())
                             .fontWeight(.semibold)
                             .multilineTextAlignment(.center)
                             .foregroundColor(.black)
                             .padding(.horizontal, 25)
+
+                        if let uiImage = UIImage(named: "light_too_high", in: FaceAILocalization.bundle, compatibleWith: nil) {
+                            Image(uiImage: uiImage)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(maxHeight: 120)
+                                .padding(.horizontal, 1)
+                        }
 
                         Button(action: {
                             withAnimation {
