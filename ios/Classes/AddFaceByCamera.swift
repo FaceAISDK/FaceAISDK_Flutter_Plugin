@@ -9,9 +9,11 @@ var FaceCameraSize: CGFloat {
 
 public struct AddFaceByCamera: View {
     let faceID: String
-    let onDismiss: (Int, String?) -> Void
+    // callback: (code, faceFeature?, faceImage?)
+    let onDismiss: (Int, String?, UIImage?) -> Void
     var autoControlBrightness: Bool = true
     var dismissAction: (() -> Void)? = nil
+    var needConfirmAddFace: Bool = true
 
     @Environment(\.dismiss) private var dismiss
     @StateObject private var viewModel: AddFaceByCameraModel = AddFaceByCameraModel()
@@ -30,12 +32,27 @@ public struct AddFaceByCamera: View {
         }
     }
 
+    private func saveFaceAndFinish() {
+        UserDefaults.standard.set(viewModel.faceFeatureBySDKCamera, forKey: faceID)
+
+        if FaceImageManger.saveFaceImage(faceName: faceID, faceImage: viewModel.croppedFaceImage) {
+            print("saveFaceImage success")
+        }
+
+        let faceImage = viewModel.croppedFaceImage
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            onDismiss(1, viewModel.faceFeatureBySDKCamera, faceImage)
+            close()
+        }
+    }
+
     public var body: some View {
         ZStack {
             VStack(spacing: 20) {
                 HStack {
                     Button(action: {
-                        onDismiss(0, nil)
+                        onDismiss(0, nil, nil)
                         close()
                     }) {
                         Image(systemName: "chevron.left")
@@ -66,26 +83,19 @@ public struct AddFaceByCamera: View {
                         .overlay(Circle().stroke(Color.gray, lineWidth: 1))
 
                     if viewModel.readyConfirmFace {
-                        Color.black.opacity(0.3)
-                            .clipShape(Circle())
+                        if needConfirmAddFace {
+                            Color.black.opacity(0.3)
+                                .clipShape(Circle())
 
-                        ConfirmAddFaceDialog(
-                            viewModel: viewModel,
-                            cameraSize: FaceCameraSize,
-                            onConfirm: {
-                                UserDefaults.standard.set(viewModel.faceFeatureBySDKCamera, forKey: faceID)
-
-                                if FaceImageManger.saveFaceImage(faceName: faceID, faceImage: viewModel.croppedFaceImage) {
-                                    print("saveFaceImage success")
+                            ConfirmAddFaceDialog(
+                                viewModel: viewModel,
+                                cameraSize: FaceCameraSize,
+                                onConfirm: {
+                                    saveFaceAndFinish()
                                 }
-
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                                    onDismiss(1, viewModel.faceFeatureBySDKCamera)
-                                    close()
-                                }
-                            }
-                        )
-                        .transition(.scale.combined(with: .opacity))
+                            )
+                            .transition(.scale.combined(with: .opacity))
+                        }
                     }
                 }
                 .frame(width: FaceCameraSize, height: FaceCameraSize)
@@ -103,6 +113,11 @@ public struct AddFaceByCamera: View {
                     ScreenBrightnessHelper.shared.maximizeBrightness()
                 }
                 viewModel.initAddFace()
+            }
+            .onChange(of: viewModel.readyConfirmFace) { ready in
+                if ready && !needConfirmAddFace {
+                    saveFaceAndFinish()
+                }
             }
             .onDisappear {
                 if autoControlBrightness {

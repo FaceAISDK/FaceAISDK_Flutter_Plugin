@@ -83,11 +83,11 @@ public class FaceAiSdkPlugin: NSObject, FlutterPlugin {
                 motionLivenessTimeOut: motionTimeout,
                 motionLivenessSteps: motionStepSize,
                 passedFaceFeature: faceFeature,
-                onDismiss: { [weak self] code, similarity, liveness in
+                onDismiss: { [weak self] code, similarity, liveness, faceImage in
                     guard let self = self else { return }
                     ScreenBrightnessHelper.shared.restoreBrightness()
 
-                    let faceImage = self.loadFaceImage(faceName: faceId ?? "verify", format: format)
+                    let faceImageStr = self.convertUIImage(faceImage, format: format)
 
                     let resultMap: [String: Any?] = [
                         "code": code,
@@ -95,7 +95,7 @@ public class FaceAiSdkPlugin: NSObject, FlutterPlugin {
                         "msg": self.messageForCode(code),
                         "similarity": Double(similarity),
                         "livenessValue": Double(liveness),
-                        "faceImage": faceImage ?? ""
+                        "faceImage": faceImageStr ?? ""
                     ]
 
                     if let pending = self.pendingResult {
@@ -142,17 +142,17 @@ public class FaceAiSdkPlugin: NSObject, FlutterPlugin {
                 motionLiveness: motionTypes,
                 motionLivenessTimeOut: motionTimeout,
                 motionLivenessSteps: motionStepSize,
-                onDismiss: { [weak self] code, liveness in
+                onDismiss: { [weak self] code, liveness, faceImage in
                     guard let self = self else { return }
                     ScreenBrightnessHelper.shared.restoreBrightness()
 
-                    let faceImage = self.loadFaceImage(faceName: "Liveness", format: format)
+                    let faceImageStr = self.convertUIImage(faceImage, format: format)
 
                     let resultMap: [String: Any?] = [
                         "code": code,
                         "msg": self.messageForCode(code),
                         "livenessValue": Double(liveness),
-                        "faceImage": faceImage ?? ""
+                        "faceImage": faceImageStr ?? ""
                     ]
 
                     if let pending = self.pendingResult {
@@ -195,18 +195,18 @@ public class FaceAiSdkPlugin: NSObject, FlutterPlugin {
 
             let addFaceView = AddFaceByCamera(
                 faceID: faceId,
-                onDismiss: { [weak self] code, faceFeature in
+                onDismiss: { [weak self] code, faceFeature, faceImage in
                     guard let self = self else { return }
                     ScreenBrightnessHelper.shared.restoreBrightness()
 
-                    let faceImage = self.loadFaceImage(faceName: faceId, format: format)
+                    let faceImageStr = self.convertUIImage(faceImage, format: format)
 
                     let resultMap: [String: Any?] = [
                         "code": code,
                         "faceID": faceId,
                         "msg": code == 1 ? "success" : "cancelled",
                         "faceFeature": faceFeature ?? "",
-                        "faceImage": faceImage ?? ""
+                        "faceImage": faceImageStr ?? ""
                     ]
 
                     if let pending = self.pendingResult {
@@ -215,7 +215,8 @@ public class FaceAiSdkPlugin: NSObject, FlutterPlugin {
                     }
                     self.dismissPresentedView()
                 },
-                autoControlBrightness: false
+                autoControlBrightness: false,
+                needConfirmAddFace: false
             )
 
             self.presentSwiftUIView(addFaceView)
@@ -250,18 +251,18 @@ public class FaceAiSdkPlugin: NSObject, FlutterPlugin {
 
             let addFaceView = AddFaceByCamera(
                 faceID: faceId,
-                onDismiss: { [weak self] code, faceFeature in
+                onDismiss: { [weak self] code, faceFeature, faceImage in
                     guard let self = self else { return }
                     ScreenBrightnessHelper.shared.restoreBrightness()
 
-                    let faceImage = self.loadFaceImage(faceName: faceId, format: format)
+                    let faceImageStr = self.convertUIImage(faceImage, format: format)
 
                     let resultMap: [String: Any?] = [
                         "code": code,
                         "faceID": faceId,
                         "msg": code == 1 ? "success" : "cancelled",
                         "faceFeature": faceFeature ?? "",
-                        "faceImage": faceImage ?? ""
+                        "faceImage": faceImageStr ?? ""
                     ]
 
                     if let pending = self.pendingResult {
@@ -270,7 +271,8 @@ public class FaceAiSdkPlugin: NSObject, FlutterPlugin {
                     }
                     self.dismissPresentedView()
                 },
-                autoControlBrightness: false
+                autoControlBrightness: false,
+                needConfirmAddFace: false
             )
 
             self.presentSwiftUIView(addFaceView)
@@ -312,26 +314,24 @@ public class FaceAiSdkPlugin: NSObject, FlutterPlugin {
         }
     }
 
-    // MARK: - Helper: Load Face Image
+    // MARK: - Helper: Convert UIImage to base64 or filePath
 
-    private func loadFaceImage(faceName: String, format: String) -> String? {
-        guard let base64 = FaceImageManger.faceImageToBase64(fileName: faceName) else {
-            return nil
-        }
+    private func convertUIImage(_ image: UIImage?, format: String) -> String? {
+        guard let image = image else { return nil }
+        guard let jpegData = image.jpegData(compressionQuality: 0.9) else { return nil }
 
         if format == "filePath" {
-            guard let imageData = Data(base64Encoded: base64) else { return nil }
             let tempDir = NSTemporaryDirectory()
-            let filePath = (tempDir as NSString).appendingPathComponent("\(faceName)_\(Int(Date().timeIntervalSince1970)).jpg")
+            let filePath = (tempDir as NSString).appendingPathComponent("face_\(Int(Date().timeIntervalSince1970 * 1000)).jpg")
             do {
-                try imageData.write(to: URL(fileURLWithPath: filePath))
+                try jpegData.write(to: URL(fileURLWithPath: filePath))
                 return filePath
             } catch {
                 return nil
             }
         }
 
-        return base64
+        return jpegData.base64EncodedString()
     }
 
     // MARK: - Helper: Message for Code

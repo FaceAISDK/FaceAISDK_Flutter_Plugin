@@ -16,7 +16,8 @@ struct LivenessDetectView: View {
     let motionLivenessTimeOut: Int
     let motionLivenessSteps: Int
 
-    let onDismiss: (Int, Float) -> Void
+    // callback: (code, liveness, faceImage?)
+    let onDismiss: (Int, Float, UIImage?) -> Void
 
     private func localizedTip(for code: Int) -> String {
         let key = "Face_Tips_Code_\(code)"
@@ -37,7 +38,7 @@ struct LivenessDetectView: View {
             VStack {
                 HStack {
                     Button(action: {
-                        onDismiss(0, 0.0)
+                        onDismiss(0, 0.0, nil)
                         close()
                     }) {
                         Image(systemName: "chevron.left")
@@ -112,7 +113,7 @@ struct LivenessDetectView: View {
                         Button(action: {
                             withAnimation {
                                 showLightHighDialog = false
-                                onDismiss(viewModel.faceVerifyResult.code, viewModel.faceVerifyResult.liveness)
+                                onDismiss(viewModel.faceVerifyResult.code, viewModel.faceVerifyResult.liveness, viewModel.faceVerifyResult.faceImage)
                                 close()
                             }
                         }) {
@@ -162,15 +163,13 @@ struct LivenessDetectView: View {
             } else {
                 showToast = true
 
-                if FaceImageManger.saveFaceImage(faceName: "Liveness", faceImage: viewModel.faceVerifyResult.faceImage) {
-                    // saved
-                }
+                let faceImage = viewModel.faceVerifyResult.faceImage
 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                     withAnimation {
                         showToast = false
                     }
-                    onDismiss(viewModel.faceVerifyResult.code, viewModel.faceVerifyResult.liveness)
+                    onDismiss(viewModel.faceVerifyResult.code, viewModel.faceVerifyResult.liveness, faceImage)
                     close()
                 }
             }

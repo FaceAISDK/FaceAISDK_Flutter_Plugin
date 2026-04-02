@@ -18,10 +18,10 @@ struct VerifyFaceView: View {
     let motionLivenessTimeOut: Int
     let motionLivenessSteps: Int
 
-    // Optional: pass face feature directly (from Flutter faceFeature param)
     var passedFaceFeature: String? = nil
 
-    let onDismiss: (Int, Float, Float) -> Void
+    // callback: (code, similarity, liveness, faceImage?)
+    let onDismiss: (Int, Float, Float, UIImage?) -> Void
 
     private func localizedTip(for code: Int) -> String {
         let key = "Face_Tips_Code_\(code)"
@@ -42,7 +42,7 @@ struct VerifyFaceView: View {
             VStack {
                 HStack {
                     Button(action: {
-                        onDismiss(0, 0.0, 0.0)
+                        onDismiss(0, 0.0, 0.0, nil)
                         close()
                     }) {
                         Image(systemName: "chevron.left")
@@ -118,7 +118,7 @@ struct VerifyFaceView: View {
                         Button(action: {
                             withAnimation {
                                 showLightHighDialog = false
-                                onDismiss(viewModel.faceVerifyResult.code, viewModel.faceVerifyResult.similarity, viewModel.faceVerifyResult.liveness)
+                                onDismiss(viewModel.faceVerifyResult.code, viewModel.faceVerifyResult.similarity, viewModel.faceVerifyResult.liveness, viewModel.faceVerifyResult.faceImage)
                                 close()
                             }
                         }) {
@@ -151,7 +151,6 @@ struct VerifyFaceView: View {
                 UIScreen.main.brightness = 1.0
             }
 
-            // Use passedFaceFeature if available, otherwise look up from UserDefaults
             let faceFeature: String?
             if let passed = passedFaceFeature, !passed.isEmpty {
                 faceFeature = passed
@@ -165,7 +164,7 @@ struct VerifyFaceView: View {
 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
                     showToast = false
-                    onDismiss(6, 0.0, 0.0)
+                    onDismiss(6, 0.0, 0.0, nil)
                     close()
                 }
                 return
@@ -191,15 +190,13 @@ struct VerifyFaceView: View {
             } else {
                 showToast = true
 
-                if FaceImageManger.saveFaceImage(faceName: faceID, faceImage: viewModel.faceVerifyResult.faceImage) {
-                    print("saveFaceImage success")
-                }
+                let faceImage = viewModel.faceVerifyResult.faceImage
 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                     withAnimation {
                         showToast = false
                     }
-                    onDismiss(viewModel.faceVerifyResult.code, viewModel.faceVerifyResult.similarity, viewModel.faceVerifyResult.liveness)
+                    onDismiss(viewModel.faceVerifyResult.code, viewModel.faceVerifyResult.similarity, viewModel.faceVerifyResult.liveness, faceImage)
                     close()
                 }
             }
