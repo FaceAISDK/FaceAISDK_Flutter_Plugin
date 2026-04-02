@@ -56,7 +56,9 @@ class _DataPageState extends State<DataPage> {
     setState(() => _enrollState = _EnrollState.loading);
 
     try {
-      await _faceAiSdk.initializeSDK({'apiKey': 'demo-key'});
+      await _faceAiSdk.initializeSDK(
+        {'apiKey': 'demo-key', 'locale': 'en'},
+      );
       if (!mounted) return;
 
       final result = await _faceAiSdk.startEnroll(faceId: faceId);

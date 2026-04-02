@@ -6,6 +6,10 @@ class FaceAiSdk {
   }
 
   /// Initialize the FaceAI SDK. Must be called before any other method.
+  ///
+  /// [config] - Configuration map. Supported keys:
+  ///   - `locale` (String) - iOS only. Sets UI language for face views.
+  ///     Supported: "en" (default), "id", "zh-Hans".
   Future<String> initializeSDK(Map<String, dynamic> config) {
     return FaceAiSdkPlatform.instance.initializeSDK(config);
   }
@@ -30,9 +34,9 @@ class FaceAiSdk {
     int livenessType = 0,
     int motionStepSize = 1,
     int motionTimeout = 10,
-    String motionTypes = "1,2,3",
+    String motionTypes = "1,2,3,4,5",
     bool allowRetry = true,
-    String format = "base64",
+    String format = "filePath",
   }) {
     assert(
       (faceId != null && faceId.isNotEmpty) ||
@@ -66,7 +70,7 @@ class FaceAiSdk {
     int motionStepSize = 1,
     int motionTimeout = 10,
     String motionTypes = "1,2,3",
-    String format = "base64",
+    String format = "filePath",
   }) {
     return FaceAiSdkPlatform.instance.startLiveness(
       livenessType: livenessType,

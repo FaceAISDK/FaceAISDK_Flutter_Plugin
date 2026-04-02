@@ -7,20 +7,48 @@ import FaceAISDK_Core
 
 public struct FaceAILocalization {
     private static var _bundle: Bundle?
+    private static var _locale: String = "en"
 
+    /// The resource bundle used for all localization lookups.
     public static var bundle: Bundle {
         if let b = _bundle { return b }
+        _bundle = resolveBundle(for: _locale)
+        return _bundle!
+    }
 
+    /// Set the locale for all FaceAI views. Supported: "en", "id", "zh-Hans".
+    /// Call this before presenting any view (typically in initializeSDK).
+    public static func setLocale(_ locale: String) {
+        _locale = locale
+        _bundle = resolveBundle(for: locale)
+    }
+
+    private static func resolveBundle(for locale: String) -> Bundle {
         let frameworkBundle = Bundle(for: FaceAiSdkPlugin.self)
 
+        // Try to find the resource bundle first
+        let resourceBundle: Bundle
         if let resourceBundleURL = frameworkBundle.url(forResource: "face_ai_sdk", withExtension: "bundle"),
-           let resourceBundle = Bundle(url: resourceBundleURL) {
-            _bundle = resourceBundle
-            return resourceBundle
+           let rb = Bundle(url: resourceBundleURL) {
+            resourceBundle = rb
+        } else {
+            resourceBundle = frameworkBundle
         }
 
-        _bundle = frameworkBundle
-        return frameworkBundle
+        // Try to load the specific .lproj for the requested locale
+        if let lprojPath = resourceBundle.path(forResource: locale, ofType: "lproj"),
+           let lprojBundle = Bundle(path: lprojPath) {
+            return lprojBundle
+        }
+
+        // Fallback: try "en"
+        if locale != "en",
+           let enPath = resourceBundle.path(forResource: "en", ofType: "lproj"),
+           let enBundle = Bundle(path: enPath) {
+            return enBundle
+        }
+
+        return resourceBundle
     }
 
     public static func localized(_ key: String) -> String {
@@ -52,7 +80,7 @@ public class FaceAiSdkPlugin: NSObject, FlutterPlugin {
         case "getPlatformVersion":
             result("iOS " + UIDevice.current.systemVersion)
         case "initializeSDK":
-            handleInitializeSDK(result: result)
+            handleInitializeSDK(call: call, result: result)
         case "startVerification":
             handleStartVerification(call: call, result: result)
         case "startLiveness":
@@ -68,7 +96,12 @@ public class FaceAiSdkPlugin: NSObject, FlutterPlugin {
 
     // MARK: - Initialize SDK
 
-    private func handleInitializeSDK(result: @escaping FlutterResult) {
+    private func handleInitializeSDK(call: FlutterMethodCall, result: @escaping FlutterResult) {
+        let args = call.arguments as? [String: Any] ?? [:]
+        let config = args["config"] as? [String: Any] ?? [:]
+        let locale = config["locale"] as? String ?? "en"
+        FaceAILocalization.setLocale(locale)
+
         isSDKInitialized = true
         result("SDK initialized successfully")
     }

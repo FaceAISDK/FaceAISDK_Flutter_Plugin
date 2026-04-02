@@ -1,6 +1,6 @@
 # FaceAI SDK Flutter Plugin
 
-Plugin Flutter untuk [FaceAISDK](https://github.com/FaceAISDK/FaceAISDK_Android) — verifikasi wajah, deteksi liveness, dan pendaftaran wajah di perangkat Android.
+Plugin Flutter untuk FaceAISDK — verifikasi wajah, deteksi liveness, dan pendaftaran wajah di perangkat Android dan iOS.
 
 **[English](README.md)**
 
@@ -15,9 +15,11 @@ Semua proses dilakukan di perangkat. Tidak memerlukan internet.
 
 ## Persyaratan
 
-- Android `minSdk >= 24`
-- Perangkat `armeabi-v7a` (ARM 32-bit) atau `arm64-v8a` (ARM 64-bit)
-- Izin kamera
+| Platform | Persyaratan |
+|----------|-------------|
+| Android | `minSdk >= 24`, perangkat `armeabi-v7a` atau `arm64-v8a` |
+| iOS | iOS 15.5+, perangkat fisik saja (tanpa simulator) |
+| Keduanya | Izin kamera |
 
 ## Konfigurasi Android (Wajib)
 
@@ -44,11 +46,6 @@ android {
     }
     kotlinOptions {
         jvmTarget = "17"
-    }
-
-    // Cegah kompresi file model SDK
-    androidResources {
-        noCompress += listOf("model", "bin", "param", "tfl")
     }
 
     // Sign dengan keystore yang terdaftar di FaceAISDK
@@ -80,6 +77,59 @@ FaceAISDK memvalidasi **nama paket + sertifikat signing** aplikasi. Anda harus m
 
 Untuk pengembangan/testing, gunakan demo keystore (`FaceAIPublic`) dengan `applicationId = "com.ai.face.Demo"`.
 
+## Konfigurasi iOS (Wajib)
+
+### 1. Podfile
+
+Set platform ke iOS 15.5+ dan tambahkan pod `FaceAISDK_Core` di `ios/Podfile`:
+
+```ruby
+platform :ios, '15.5'
+
+target 'Runner' do
+  use_frameworks!
+
+  flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
+
+  pod 'FaceAISDK_Core', :git => 'https://github.com/FaceAISDK/FaceAISDK_Core.git', :tag => '2026.03.27'
+end
+```
+
+Tambahkan blok `post_install` untuk memperbaiki ABI mismatch `BUILD_LIBRARY_FOR_DISTRIBUTION`:
+
+```ruby
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    flutter_additional_ios_build_settings(target)
+
+    target.build_configurations.each do |config|
+      config.build_settings['BUILD_LIBRARY_FOR_DISTRIBUTION'] = 'YES'
+      config.build_settings['OTHER_SWIFT_FLAGS'] ||= '$(inherited)'
+      config.build_settings['OTHER_SWIFT_FLAGS'] += ' -Xfrontend -enable-library-evolution'
+    end
+  end
+end
+```
+
+Lalu jalankan:
+
+```bash
+cd ios && pod install
+```
+
+### 2. Info.plist
+
+Tambahkan izin kamera di `ios/Runner/Info.plist`:
+
+```xml
+<key>NSCameraUsageDescription</key>
+<string>Akses kamera diperlukan untuk verifikasi wajah dan deteksi liveness.</string>
+```
+
+### 3. Build Settings
+
+Plugin memerlukan **perangkat fisik** — build simulator tidak didukung (`EXCLUDED_ARCHS[sdk=iphonesimulator*]` mengecualikan `i386` dan `arm64`).
+
 ## Penggunaan
 
 ### Inisialisasi SDK
@@ -88,7 +138,9 @@ Wajib dipanggil sebelum method lainnya:
 
 ```dart
 final faceAiSdk = FaceAiSdk();
-await faceAiSdk.initializeSDK({});
+await faceAiSdk.initializeSDK({
+  'locale': 'id',  // Khusus iOS: bahasa UI — "en" (default), "id", "zh-Hans"
+});
 ```
 
 ### Daftarkan Wajah (Enroll)
@@ -112,13 +164,15 @@ Bandingkan wajah langsung dengan wajah tersimpan:
 
 ```dart
 final result = await faceAiSdk.startVerification(
-  faceId: "user_123",
-  threshold: 0.85,          // 0.75 - 0.95
-  livenessType: 1,          // 0=NONE, 1=MOTION, 2=MOTION+COLOR, 3=COLOR, 4=SILENT
-  motionStepSize: 1,        // 1-2 langkah
-  motionTimeout: 10,        // 3-22 detik
-  motionTypes: "1,2,3",     // 1=buka mulut, 2=senyum, 3=kedip, 4=geleng, 5=angguk
-  format: "base64",
+  faceId: "user_123",        // ID wajah tersimpan (faceId atau faceFeature wajib diisi)
+  faceFeature: null,          // atau langsung kirim string fitur wajah
+  threshold: 0.85,            // 0.75 - 0.95
+  livenessType: 1,            // 0=NONE, 1=MOTION, 2=MOTION+COLOR, 3=COLOR, 4=SILENT
+  motionStepSize: 1,          // 1-2 langkah
+  motionTimeout: 10,          // 3-22 detik
+  motionTypes: "1,2,3",       // 1=buka mulut, 2=senyum, 3=kedip, 4=geleng, 5=angguk
+  allowRetry: true,           // izinkan coba ulang saat timeout/gagal
+  format: "base64",           // "base64" atau "filePath"
 );
 
 if (result['code'] == 1) {
@@ -206,7 +260,15 @@ SDK memvalidasi **nama paket + sertifikat signing** aplikasi Anda. Jika tidak co
 3. `android:extractNativeLibs="true"` diset di AndroidManifest.xml
 ### Kamera tidak berfungsi
 
-Pastikan izin kamera diberikan saat runtime. Plugin mendeklarasikan `<uses-permission android:name="android.permission.CAMERA" />` secara otomatis.
+Pastikan izin kamera diberikan saat runtime. Plugin mendeklarasikan `<uses-permission android:name="android.permission.CAMERA" />` secara otomatis di Android. Di iOS, tambahkan `NSCameraUsageDescription` di `Info.plist`.
+
+### iOS: Error `BUILD_LIBRARY_FOR_DISTRIBUTION` / ABI mismatch
+
+`FaceAISDK_Core` adalah binary pre-compiled. Semua pod harus menggunakan pengaturan `BUILD_LIBRARY_FOR_DISTRIBUTION` yang konsisten. Tambahkan blok `post_install` dari bagian Konfigurasi iOS ke Podfile Anda.
+
+### iOS: `No such module 'FaceAISDK_Core'`
+
+Pastikan Anda sudah menambahkan pod `FaceAISDK_Core` di Podfile dan menjalankan `pod install`. Modul ini tidak tersedia di CocoaPods trunk — harus direferensikan via URL Git.
 
 ## Lisensi
 
@@ -214,4 +276,5 @@ Lihat [LICENSE](LICENSE) untuk detail.
 
 ## Kredit
 
-- [FaceAISDK](https://github.com/FaceAISDK/FaceAISDK_Android) — Core face AI engine
+- [FaceAISDK Android](https://github.com/FaceAISDK/FaceAISDK_Android) — Core face AI engine (Android)
+- [FaceAISDK_Core](https://github.com/FaceAISDK/FaceAISDK_Core) — Core face AI engine (iOS)

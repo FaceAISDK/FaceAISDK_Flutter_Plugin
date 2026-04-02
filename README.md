@@ -1,6 +1,6 @@
 # FaceAI SDK Flutter Plugin
 
-A Flutter plugin for [FaceAISDK](https://github.com/FaceAISDK/FaceAISDK_Android) — on-device face verification, liveness detection, and face enrollment for Android.
+A Flutter plugin for FaceAISDK — on-device face verification, liveness detection, and face enrollment for Android and iOS.
 
 **[Bahasa Indonesia](README_ID.md)**
 
@@ -15,9 +15,11 @@ All processing is on-device. No internet required.
 
 ## Requirements
 
-- Android `minSdk >= 24`
-- `armeabi-v7a` (32-bit ARM) or `arm64-v8a` (64-bit ARM) device
-- Camera permission
+| Platform | Requirement |
+|----------|-------------|
+| Android | `minSdk >= 24`, `armeabi-v7a` or `arm64-v8a` device |
+| iOS | iOS 15.5+, physical device only (no simulator) |
+| Both | Camera permission |
 
 ## Android Setup (Required)
 
@@ -44,11 +46,6 @@ android {
     }
     kotlinOptions {
         jvmTarget = "17"
-    }
-
-    // Prevent compression of SDK model files
-    androidResources {
-        noCompress += listOf("model", "bin", "param", "tfl")
     }
 
     // Sign with FaceAISDK-registered keystore
@@ -80,6 +77,59 @@ FaceAISDK validates the app's **package name + signing certificate**. You must r
 
 For development/testing, you can use the demo keystore (`FaceAIPublic`) with `applicationId = "com.ai.face.Demo"`.
 
+## iOS Setup (Required)
+
+### 1. Podfile
+
+Set the platform to iOS 15.5+ and add the `FaceAISDK_Core` pod in your `ios/Podfile`:
+
+```ruby
+platform :ios, '15.5'
+
+target 'Runner' do
+  use_frameworks!
+
+  flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
+
+  pod 'FaceAISDK_Core', :git => 'https://github.com/FaceAISDK/FaceAISDK_Core.git', :tag => '2026.03.27'
+end
+```
+
+Add this `post_install` block to fix `BUILD_LIBRARY_FOR_DISTRIBUTION` ABI mismatch:
+
+```ruby
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    flutter_additional_ios_build_settings(target)
+
+    target.build_configurations.each do |config|
+      config.build_settings['BUILD_LIBRARY_FOR_DISTRIBUTION'] = 'YES'
+      config.build_settings['OTHER_SWIFT_FLAGS'] ||= '$(inherited)'
+      config.build_settings['OTHER_SWIFT_FLAGS'] += ' -Xfrontend -enable-library-evolution'
+    end
+  end
+end
+```
+
+Then run:
+
+```bash
+cd ios && pod install
+```
+
+### 2. Info.plist
+
+Add camera permission to `ios/Runner/Info.plist`:
+
+```xml
+<key>NSCameraUsageDescription</key>
+<string>Camera access is required for face verification and liveness detection.</string>
+```
+
+### 3. Build Settings
+
+The plugin requires a **physical device** — simulator builds are not supported (`EXCLUDED_ARCHS[sdk=iphonesimulator*]` excludes `i386` and `arm64`).
+
 ## Usage
 
 ### Initialize SDK
@@ -88,7 +138,9 @@ Must be called before any other method:
 
 ```dart
 final faceAiSdk = FaceAiSdk();
-await faceAiSdk.initializeSDK({});
+await faceAiSdk.initializeSDK({
+  'locale': 'en',  // iOS only: UI language — "en" (default), "id", "zh-Hans"
+});
 ```
 
 ### Enroll a Face
@@ -112,13 +164,15 @@ Compare a live face against a stored face:
 
 ```dart
 final result = await faceAiSdk.startVerification(
-  faceId: "user_123",
-  threshold: 0.85,          // 0.75 - 0.95
-  livenessType: 1,          // 0=NONE, 1=MOTION, 2=MOTION+COLOR, 3=COLOR, 4=SILENT
-  motionStepSize: 1,        // 1-2 steps
-  motionTimeout: 10,        // 3-22 seconds
-  motionTypes: "1,2,3",     // 1=mouth, 2=smile, 3=blink, 4=shake, 5=nod
-  format: "base64",
+  faceId: "user_123",        // face ID for stored lookup (faceId or faceFeature required)
+  faceFeature: null,          // or pass face feature string directly
+  threshold: 0.85,            // 0.75 - 0.95
+  livenessType: 1,            // 0=NONE, 1=MOTION, 2=MOTION+COLOR, 3=COLOR, 4=SILENT
+  motionStepSize: 1,          // 1-2 steps
+  motionTimeout: 10,          // 3-22 seconds
+  motionTypes: "1,2,3",       // 1=mouth, 2=smile, 3=blink, 4=shake, 5=nod
+  allowRetry: true,           // allow retry on timeout/failure
+  format: "base64",           // "base64" or "filePath"
 );
 
 if (result['code'] == 1) {
@@ -206,7 +260,15 @@ The SDK validates your app's **package name + signing certificate**. If they don
 3. `android:extractNativeLibs="true"` is set in AndroidManifest.xml
 ### Camera not working
 
-Ensure camera permission is granted at runtime. The plugin declares `<uses-permission android:name="android.permission.CAMERA" />` automatically.
+Ensure camera permission is granted at runtime. The plugin declares `<uses-permission android:name="android.permission.CAMERA" />` automatically on Android. On iOS, add `NSCameraUsageDescription` to `Info.plist`.
+
+### iOS: `BUILD_LIBRARY_FOR_DISTRIBUTION` / ABI mismatch errors
+
+`FaceAISDK_Core` is a pre-compiled binary. All pods must use a consistent `BUILD_LIBRARY_FOR_DISTRIBUTION` setting. Add the `post_install` block from the iOS Setup section to your Podfile.
+
+### iOS: `No such module 'FaceAISDK_Core'`
+
+Make sure you added the `FaceAISDK_Core` pod to your Podfile and ran `pod install`. The module is not available on CocoaPods trunk — it must be referenced via the Git URL.
 
 ## License
 
@@ -214,4 +276,5 @@ See [LICENSE](LICENSE) for details.
 
 ## Credits
 
-- [FaceAISDK](https://github.com/FaceAISDK/FaceAISDK_Android) — Core face AI engine
+- [FaceAISDK Android](https://github.com/FaceAISDK/FaceAISDK_Android) — Core face AI engine (Android)
+- [FaceAISDK_Core](https://github.com/FaceAISDK/FaceAISDK_Core) — Core face AI engine (iOS)
