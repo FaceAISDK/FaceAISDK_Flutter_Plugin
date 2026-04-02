@@ -112,10 +112,10 @@ class LivenessDetectActivity : AbsBaseActivity() {
                 override fun onLivenessDetected(livenessValue: Float, bitmap: Bitmap) {
                     BitmapUtils.saveCompressBitmap(bitmap, CACHE_FACE_LOG_DIR, "liveBitmap")
                     if (livenessValue > 0.8) {
-                        VoicePlayer.getInstance().addPayList(R.raw.verify_success)
+                        VoicePlayer.getInstance().addPayList(VoicePlayer.localized(baseContext, R.raw.verify_success))
                         ImageToast().show(applicationContext, getString(R.string.face_verify_success))
                     } else {
-                        VoicePlayer.getInstance().addPayList(R.raw.ding_failed)
+                        VoicePlayer.getInstance().addPayList(VoicePlayer.localized(baseContext, R.raw.ding_failed))
                         ImageToast().show(applicationContext, getString(R.string.face_verify_failed))
                     }
                     finishFaceVerify(10, R.string.liveness_detection_done, livenessValue)
@@ -210,7 +210,7 @@ class LivenessDetectActivity : AbsBaseActivity() {
                 }
 
                 ALIVE_DETECT_TYPE_ENUM.COLOR_FLASH_START -> {
-                    VoicePlayer.getInstance().play(R.raw.closer_to_screen)
+                    VoicePlayer.getInstance().play(VoicePlayer.localized(baseContext, R.raw.closer_to_screen))
                 }
 
                 // 动作活体检测完成了
@@ -239,27 +239,27 @@ class LivenessDetectActivity : AbsBaseActivity() {
                 }
 
                 ALIVE_DETECT_TYPE_ENUM.OPEN_MOUSE -> {
-                    VoicePlayer.getInstance().play(R.raw.open_mouse)
+                    VoicePlayer.getInstance().play(VoicePlayer.localized(baseContext, R.raw.open_mouse))
                     setMainTips(R.string.repeat_open_close_mouse)
                 }
 
                 ALIVE_DETECT_TYPE_ENUM.SMILE -> {
                     setMainTips(R.string.motion_smile)
-                    VoicePlayer.getInstance().play(R.raw.smile)
+                    VoicePlayer.getInstance().play(VoicePlayer.localized(baseContext, R.raw.smile))
                 }
 
                 ALIVE_DETECT_TYPE_ENUM.BLINK -> {
-                    VoicePlayer.getInstance().play(R.raw.blink)
+                    VoicePlayer.getInstance().play(VoicePlayer.localized(baseContext, R.raw.blink))
                     setMainTips(R.string.motion_blink_eye)
                 }
 
                 ALIVE_DETECT_TYPE_ENUM.SHAKE_HEAD -> {
-                    VoicePlayer.getInstance().play(R.raw.shake_head)
+                    VoicePlayer.getInstance().play(VoicePlayer.localized(baseContext, R.raw.shake_head))
                     setMainTips(R.string.motion_shake_head)
                 }
 
                 ALIVE_DETECT_TYPE_ENUM.NOD_HEAD -> {
-                    VoicePlayer.getInstance().play(R.raw.nod_head)
+                    VoicePlayer.getInstance().play(VoicePlayer.localized(baseContext, R.raw.nod_head))
                     setMainTips(R.string.motion_node_head)
                 }
 

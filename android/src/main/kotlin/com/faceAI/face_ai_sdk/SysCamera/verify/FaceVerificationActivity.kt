@@ -228,7 +228,7 @@ class FaceVerificationActivity : AbsBaseActivity() {
 
         if (isVerifyMatched && livenessValue > 0.8) {
             //2. 相似度>verifyThreshold，并且livenessValue>0.8
-            VoicePlayer.getInstance().addPayList(R.raw.verify_success)
+            VoicePlayer.getInstance().addPayList(VoicePlayer.localized(baseContext, R.raw.verify_success))
             ImageToast().show(applicationContext, getString(R.string.face_verify_success))
             Handler(Looper.getMainLooper()).postDelayed({
                 finishFaceVerify(1, R.string.face_verify_result_success, similarity, livenessValue)
@@ -239,7 +239,7 @@ class FaceVerificationActivity : AbsBaseActivity() {
             } else {
                 2 //VERIFY_FAILED
             }
-            VoicePlayer.getInstance().addPayList(R.raw.verify_failed)
+            VoicePlayer.getInstance().addPayList(VoicePlayer.localized(baseContext, R.raw.verify_failed))
             if (allowRetry) {
                 AlertDialog.Builder(this@FaceVerificationActivity)
                     .setTitle(R.string.face_verify_failed_title)
@@ -302,27 +302,27 @@ class FaceVerificationActivity : AbsBaseActivity() {
                 }
 
                 ALIVE_DETECT_TYPE_ENUM.OPEN_MOUSE -> {
-                    VoicePlayer.getInstance().play(R.raw.open_mouse)
+                    VoicePlayer.getInstance().play(VoicePlayer.localized(baseContext, R.raw.open_mouse))
                     setMainTips(R.string.repeat_open_close_mouse)
                 }
 
                 ALIVE_DETECT_TYPE_ENUM.SMILE -> {
                     setMainTips(R.string.motion_smile)
-                    VoicePlayer.getInstance().play(R.raw.smile)
+                    VoicePlayer.getInstance().play(VoicePlayer.localized(baseContext, R.raw.smile))
                 }
 
                 ALIVE_DETECT_TYPE_ENUM.BLINK -> {
-                    VoicePlayer.getInstance().play(R.raw.blink)
+                    VoicePlayer.getInstance().play(VoicePlayer.localized(baseContext, R.raw.blink))
                     setMainTips(R.string.motion_blink_eye)
                 }
 
                 ALIVE_DETECT_TYPE_ENUM.SHAKE_HEAD -> {
-                    VoicePlayer.getInstance().play(R.raw.shake_head)
+                    VoicePlayer.getInstance().play(VoicePlayer.localized(baseContext, R.raw.shake_head))
                     setMainTips(R.string.motion_shake_head)
                 }
 
                 ALIVE_DETECT_TYPE_ENUM.NOD_HEAD -> {
-                    VoicePlayer.getInstance().play(R.raw.nod_head)
+                    VoicePlayer.getInstance().play(VoicePlayer.localized(baseContext, R.raw.nod_head))
                     setMainTips(R.string.motion_node_head)
                 }
 
@@ -373,7 +373,7 @@ class FaceVerificationActivity : AbsBaseActivity() {
 
                 //炫彩活体通过
                 ALIVE_DETECT_TYPE_ENUM.COLOR_FLASH_LIVE_SUCCESS -> {
-                    VoicePlayer.getInstance().play(R.raw.face_camera)
+                    VoicePlayer.getInstance().play(VoicePlayer.localized(baseContext, R.raw.face_camera))
                     setMainTips(R.string.keep_face_visible)
                 }
 
@@ -408,7 +408,7 @@ class FaceVerificationActivity : AbsBaseActivity() {
                 }
 
                 ALIVE_DETECT_TYPE_ENUM.COLOR_FLASH_START -> {
-                    VoicePlayer.getInstance().play(R.raw.closer_to_screen)
+                    VoicePlayer.getInstance().play(VoicePlayer.localized(baseContext, R.raw.closer_to_screen))
                 }
             }
         }
