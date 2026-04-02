@@ -3,6 +3,39 @@ import UIKit
 import SwiftUI
 import FaceAISDK_Core
 
+// MARK: - Localization Helper
+
+public struct FaceAILocalization {
+    private static var _bundle: Bundle?
+
+    public static var bundle: Bundle {
+        if let b = _bundle { return b }
+
+        let frameworkBundle = Bundle(for: FaceAiSdkPlugin.self)
+
+        if let resourceBundleURL = frameworkBundle.url(forResource: "face_ai_sdk", withExtension: "bundle"),
+           let resourceBundle = Bundle(url: resourceBundleURL) {
+            _bundle = resourceBundle
+            return resourceBundle
+        }
+
+        _bundle = frameworkBundle
+        return frameworkBundle
+    }
+
+    public static func localized(_ key: String) -> String {
+        return bundle.localizedString(forKey: key, value: key, table: nil)
+    }
+
+    public static func localizedTip(for code: Int, defaultPrefix: String = "Tips") -> String {
+        let key = "Face_Tips_Code_\(code)"
+        let defaultValue = "\(defaultPrefix) Code=\(code)"
+        return bundle.localizedString(forKey: key, value: defaultValue, table: nil)
+    }
+}
+
+// MARK: - Plugin
+
 public class FaceAiSdkPlugin: NSObject, FlutterPlugin {
     private var isSDKInitialized = false
     private var pendingResult: FlutterResult? = nil
