@@ -82,7 +82,7 @@ struct LivenessDetectView: View {
             .navigationBarHidden(true)
 
             if showToast {
-                let isSuccess = viewModel.faceVerifyResult.liveness > 0.8
+                let isSuccess = viewModel.faceVerifyResult.liveness > 0.7
                 let toastStyle: ToastStyle = isSuccess ? .success : .failure
                 let toastMessage = isSuccess
                     ? FaceAILocalization.localizedTip(for: 61)  // Liveness Check Passed
