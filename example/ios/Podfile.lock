@@ -2,7 +2,7 @@ PODS:
   - face_ai_sdk (0.0.1):
     - FaceAISDK_Core
     - Flutter
-  - FaceAISDK_Core (2026.03.27):
+  - FaceAISDK_Core (2026.04.09):
     - GoogleMLKit/FaceDetection (= 9.0.0)
     - TensorFlowLiteSwift (~> 2.17)
   - Flutter (1.0.0)
@@ -53,9 +53,6 @@ PODS:
     - nanopb/encode (= 3.30910.0)
   - nanopb/decode (3.30910.0)
   - nanopb/encode (3.30910.0)
-  - path_provider_foundation (0.0.1):
-    - Flutter
-    - FlutterMacOS
   - PromisesObjC (2.4.0)
   - shared_preferences_foundation (0.0.1):
     - Flutter
@@ -74,10 +71,9 @@ PODS:
 
 DEPENDENCIES:
   - face_ai_sdk (from `.symlinks/plugins/face_ai_sdk/ios`)
-  - FaceAISDK_Core (from `https://github.com/FaceAISDK/FaceAISDK_Core.git`, tag `2026.03.27`)
+  - FaceAISDK_Core (from `https://github.com/FaceAISDK/FaceAISDK_Core.git`, tag `2026.04.09`)
   - Flutter (from `Flutter`)
   - integration_test (from `.symlinks/plugins/integration_test/ios`)
-  - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
 
@@ -102,13 +98,11 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/face_ai_sdk/ios"
   FaceAISDK_Core:
     :git: https://github.com/FaceAISDK/FaceAISDK_Core.git
-    :tag: 2026.03.27
+    :tag: 2026.04.09
   Flutter:
     :path: Flutter
   integration_test:
     :path: ".symlinks/plugins/integration_test/ios"
-  path_provider_foundation:
-    :path: ".symlinks/plugins/path_provider_foundation/darwin"
   shared_preferences_foundation:
     :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
   url_launcher_ios:
@@ -117,11 +111,11 @@ EXTERNAL SOURCES:
 CHECKOUT OPTIONS:
   FaceAISDK_Core:
     :git: https://github.com/FaceAISDK/FaceAISDK_Core.git
-    :tag: 2026.03.27
+    :tag: 2026.04.09
 
 SPEC CHECKSUMS:
   face_ai_sdk: 299ce67367e63b21947159469a84fd79f57d6f34
-  FaceAISDK_Core: 83a80e891a282007c9c737bfadcfdf4a5cd2a5f2
+  FaceAISDK_Core: 35ab3ea9f4566b78d692a3d21ab9c692e62895ce
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleMLKit: b1eee21a41c57704fe72483b15c85cb2c0cd7444
@@ -134,13 +128,12 @@ SPEC CHECKSUMS:
   MLKitFaceDetection: 32549f1e70e6e7731261bf9cea2b74095e2531cb
   MLKitVision: 39a5a812db83c4a0794445088e567f3631c11961
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
-  path_provider_foundation: bb55f6dbba17d0dccd6737fe6f7f34fbd0376880
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   shared_preferences_foundation: 7036424c3d8ec98dfe75ff1667cb0cd531ec82bb
   TensorFlowLiteC: eac6d689a8d391d1b202dc59e3d9165ba64aaf73
   TensorFlowLiteSwift: 723fe42222815e72490c79feeff05305530de393
   url_launcher_ios: 7a95fa5b60cc718a708b8f2966718e93db0cef1b
 
-PODFILE CHECKSUM: ea7f71aacc56509e38d644accb6686b60f5360df
+PODFILE CHECKSUM: d3a5903afcc69d258037bcd131e394034da41010
 
 COCOAPODS: 1.16.2

@@ -1083,7 +1083,7 @@ git commit -m "feat: update example app configuration for FaceAISDK"
 cd example && flutter run
 ```
 
-Note: Face AI SDK requires arm64-v8a, so this must run on a physical device or arm64 emulator.
+Note: FaceAI SDK requires arm64-v8a, so this must run on a physical device or arm64 emulator.
 
 - [ ] **Step 2: Test initializeSDK**
 

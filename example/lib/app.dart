@@ -9,7 +9,7 @@ class FaceAiSdkApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Face AI SDK',
+      title: 'FaceAI SDK',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
       home: const MainShell(),

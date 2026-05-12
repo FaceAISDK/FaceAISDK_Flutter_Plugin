@@ -15,11 +15,11 @@ Semua proses dilakukan di perangkat. Tidak memerlukan internet.
 
 ## Persyaratan
 
-| Platform | Persyaratan |
-|----------|-------------|
+| Platform | Persyaratan                                              |
+|----------|----------------------------------------------------------|
 | Android | `minSdk >= 24`, perangkat `armeabi-v7a` atau `arm64-v8a` |
-| iOS | iOS 15.5+, perangkat fisik saja (tanpa simulator) |
-| Keduanya | Izin kamera |
+| iOS | iOS 15.5+, perangkat fisik saja (tanpa simulator)        |
+| Keduanya | Izin kamera                                              |
 
 ## Konfigurasi Android (Wajib)
 

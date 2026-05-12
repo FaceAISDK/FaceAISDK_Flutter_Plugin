@@ -50,7 +50,7 @@ public struct AddFaceByCamera: View {
             VStack(spacing: 20) {
                 HStack {
                     Button(action: {
-                        onDismiss(0, nil, nil)
+                        onDismiss(0, "", nil)
                         close()
                     }) {
                         Image(systemName: "chevron.left")

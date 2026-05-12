@@ -57,7 +57,7 @@ class _DashboardPageState extends State<DashboardPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Face AI SDK',
+          'FaceAI SDK',
           style: GoogleFonts.manrope(
             fontSize: 20,
             fontWeight: FontWeight.w700,
