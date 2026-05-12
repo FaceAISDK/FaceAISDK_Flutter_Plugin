@@ -27,7 +27,7 @@ struct VerifyFaceView: View {
     let onDismiss: (Int, Float, Float, UIImage?) -> Void
 
     private var toastOverlay: some View {
-        let isSuccess = viewModel.faceVerifyResult.similarity > threshold && viewModel.faceVerifyResult.liveness > 0.7
+        let isSuccess = viewModel.faceVerifyResult.similarity > threshold && viewModel.faceVerifyResult.liveness > 0.72
         let displayMessage: String = {
             if !toastViewTips.isEmpty {
                 return toastViewTips
@@ -53,7 +53,11 @@ struct VerifyFaceView: View {
     }
 
     private func localizedTip(for code: Int) -> String {
-        return FaceAILocalization.localizedTip(for: code, defaultPrefix: "VerifyFace")
+        let tipsString = FaceAILocalization.localizedTip(for: code, defaultPrefix: "VerifyFace")
+        if code != 0 && code != 1 && code != 3 {
+           // TTSPlayer.shared.speak(tipsString)
+        }
+        return tipsString
     }
 
     private func close() {
@@ -128,7 +132,7 @@ struct VerifyFaceView: View {
                     .foregroundColor(.black)
 
                 ZStack {
-                    FaceAICameraView(session: viewModel.captureSession, cameraSize: FaceCameraSize)
+                    FaceSDKCameraView(session: viewModel.captureSession, cameraSize: FaceCameraSize)
                         .frame(width: FaceCameraSize, height: FaceCameraSize)
                         .aspectRatio(1.0, contentMode: .fit)
                         .clipShape(Circle())

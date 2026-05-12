@@ -2,7 +2,7 @@ import Foundation
 import SwiftUI
 
 extension Color {
-    static let faceMain = Color(red: 0.0, green: 0.218, blue: 0.081)
+    static let faceMain = Color(red: 0.204, green: 0.467, blue: 0.220)
 }
 
 enum ToastStyle {

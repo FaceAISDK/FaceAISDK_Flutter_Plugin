@@ -68,15 +68,6 @@ android {
 }
 ```
 
-### 3. Registrasi Signing Key
-
-FaceAISDK memvalidasi **nama paket + sertifikat signing** aplikasi. Anda harus mendaftarkan signing key ke penyedia SDK:
-
-- Kontak: FaceAISDK.Service@gmail.com
-- GitHub: https://github.com/FaceAISDK/FaceAISDK_Android
-
-Untuk pengembangan/testing, gunakan demo keystore (`FaceAIPublic`) dengan `applicationId = "com.ai.face.Demo"`.
-
 ## Konfigurasi iOS (Wajib)
 
 ### 1. Podfile
@@ -166,7 +157,7 @@ Bandingkan wajah langsung dengan wajah tersimpan:
 final result = await faceAiSdk.startVerification(
   faceId: "user_123",        // ID wajah tersimpan (faceId atau faceFeature wajib diisi)
   faceFeature: null,          // atau langsung kirim string fitur wajah
-  threshold: 0.85,            // 0.75 - 0.95
+  threshold: 0.85,            // 0.8 - 0.95
   livenessType: 1,            // 0=NONE, 1=MOTION, 2=MOTION+COLOR, 3=COLOR, 4=SILENT
   motionStepSize: 1,          // 1-2 langkah
   motionTimeout: 10,          // 3-22 detik
@@ -216,16 +207,18 @@ if (result['code'] == 1) {
 
 ## Kode Hasil
 
-| Kode | Arti |
-|------|------|
-| 0 | Dibatalkan oleh pengguna |
-| 1 | Berhasil |
-| 2 | Verifikasi gagal (bukan orang yang sama) |
-| 3 | Timeout |
-| 4 | Timeout (melebihi batas coba ulang) |
-| 5 | Wajah tidak terdeteksi berulang kali |
-| 10 | Deteksi liveness selesai |
-| 11 | Silent liveness gagal |
+| Kode | Arti                                   |
+|------|----------------------------------------|
+| 0    | Dibatalkan oleh pengguna               |
+| 1    | Berhasil                               |
+| 2    | Verifikasi gagal (bukan orang yang sama) |
+| 3    | Timeout                                |
+| 4    | Timeout (melebihi batas coba ulang)    |
+| 5    | Wajah tidak terdeteksi berulang kali   |
+| 10   | Deteksi liveness selesai               |
+| 11   | Silent liveness gagal                  |
+| 12   | Tidak ada fitur wajah yang ditemukan   |
+
 
 ## Tipe Liveness
 
@@ -251,13 +244,7 @@ String dipisahkan koma berisi ID gerakan:
 
 ## Troubleshooting
 
-### SIGSEGV crash di `checkModel`
 
-SDK memvalidasi **nama paket + sertifikat signing** aplikasi Anda. Jika tidak cocok dengan nilai yang terdaftar, native code akan crash. Pastikan:
-
-1. `applicationId` Anda terdaftar di FaceAISDK
-2. Keystore signing Anda terdaftar di FaceAISDK
-3. `android:extractNativeLibs="true"` diset di AndroidManifest.xml
 ### Kamera tidak berfungsi
 
 Pastikan izin kamera diberikan saat runtime. Plugin mendeklarasikan `<uses-permission android:name="android.permission.CAMERA" />` secara otomatis di Android. Di iOS, tambahkan `NSCameraUsageDescription` di `Info.plist`.
@@ -272,7 +259,7 @@ Pastikan Anda sudah menambahkan pod `FaceAISDK_Core` di Podfile dan menjalankan 
 
 ## Lisensi
 
-Lihat [LICENSE](LICENSE) untuk detail.
+**Lihat [LICENSE](LICENSE) untuk detail.**
 
 ## Kredit
 

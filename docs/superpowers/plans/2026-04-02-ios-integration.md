@@ -38,7 +38,7 @@ Edit `ios/face_ai_sdk.podspec` to add the FaceAISDK_Core dependency and raise iO
 ```ruby
 Pod::Spec.new do |s|
   s.name             = 'face_ai_sdk'
-  s.version          = '0.0.1'
+  s.version          = '1.0.1'
   s.summary          = 'FaceAI SDK Flutter Plugin for iOS'
   s.description      = <<-DESC
 FaceAI SDK Flutter Plugin - Face verification, liveness detection, and face enrollment.
@@ -303,7 +303,7 @@ import FaceAISDK_Core
 
 @MainActor
 var FaceCameraSize: CGFloat {
-    15 * min(UIScreen.main.bounds.width, UIScreen.main.bounds.height) / 20
+    14 * min(UIScreen.main.bounds.width, UIScreen.main.bounds.height) / 20
 }
 
 public struct AddFaceByCamera: View {

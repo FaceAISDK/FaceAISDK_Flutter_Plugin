@@ -18,9 +18,14 @@ public struct AddFaceByCamera: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject private var viewModel: AddFaceByCameraModel = AddFaceByCameraModel()
 
-    private func localizedTip(for code: Int) -> String {
-        return FaceAILocalization.localizedTip(for: code, defaultPrefix: "AddFace")
-    }
+     private func localizedTip(for code: Int) -> String {
+         let tipsString = FaceAILocalization.localizedTip(for: code, defaultPrefix: "AddFace")
+         if code != 0 && code != 1 && code != 11 {
+            // TTSPlayer.shared.speak(tipsString)
+         }
+         return tipsString
+     }
+
 
     private func close() {
         if let dismissAction = dismissAction {
@@ -74,7 +79,7 @@ public struct AddFaceByCamera: View {
                     .cornerRadius(20)
 
                 ZStack {
-                    FaceAICameraView(session: viewModel.captureSession, cameraSize: FaceCameraSize)
+                    FaceSDKCameraView(session: viewModel.captureSession, cameraSize: FaceCameraSize)
                         .aspectRatio(1.0, contentMode: .fit)
                         .clipShape(Circle())
                         .background(Circle().fill(Color.white))

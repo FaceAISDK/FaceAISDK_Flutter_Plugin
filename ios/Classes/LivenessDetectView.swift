@@ -20,7 +20,11 @@ struct LivenessDetectView: View {
     let onDismiss: (Int, Float, UIImage?) -> Void
 
     private func localizedTip(for code: Int) -> String {
-        return FaceAILocalization.localizedTip(for: code, defaultPrefix: "LivenessDetect")
+        let tipsString = FaceAILocalization.localizedTip(for: code, defaultPrefix: "LivenessDetect")
+        if code != 0 && code != 1 && code != 3 {
+           // TTSPlayer.shared.speak(tipsString)
+        }
+        return tipsString
     }
 
     private func close() {
@@ -67,7 +71,7 @@ struct LivenessDetectView: View {
                     .frame(minHeight: 30)
                     .foregroundColor(.black)
 
-                FaceAICameraView(session: viewModel.captureSession, cameraSize: FaceCameraSize)
+                FaceSDKCameraView(session: viewModel.captureSession, cameraSize: FaceCameraSize)
                     .frame(width: FaceCameraSize, height: FaceCameraSize)
                     .aspectRatio(1.0, contentMode: .fit)
                     .padding(.vertical, 8)
@@ -82,7 +86,7 @@ struct LivenessDetectView: View {
             .navigationBarHidden(true)
 
             if showToast {
-                let isSuccess = viewModel.faceVerifyResult.liveness > 0.7
+                let isSuccess = viewModel.faceVerifyResult.liveness > 0.72
                 let toastStyle: ToastStyle = isSuccess ? .success : .failure
                 let toastMessage = isSuccess
                     ? FaceAILocalization.localizedTip(for: 61)  // Liveness Check Passed

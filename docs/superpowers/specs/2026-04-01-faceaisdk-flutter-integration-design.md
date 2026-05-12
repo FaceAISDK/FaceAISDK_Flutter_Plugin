@@ -38,11 +38,11 @@ class FaceAiSdk {
   /// 1:1 Face Verification against a stored faceId
   Future<Map<String, dynamic>> startVerification({
     required String faceId,
-    double threshold = 0.85,        // 0.75 - 0.95
+    double threshold = 0.84,        // 0.8 - 0.95
     int livenessType = 0,           // 0=NONE, 1=MOTION, 2=MOTION+COLOR, 3=COLOR, 4=SILENT
-    int motionStepSize = 1,         // 1-2
-    int motionTimeout = 10,         // 3-22 seconds
-    String motionTypes = "1,2,3",   // 1=mouth, 2=smile, 3=blink, 4=shake, 5=nod
+    int motionStepSize = 2,         // 1-2
+    int motionTimeout = 9,         // 3-22 seconds
+    String motionTypes = "1,2,3,4,5",   // 1=mouth, 2=smile, 3=blink, 4=shake, 5=nod
     String format = "base64",       // "base64" or "filePath"
   });
 

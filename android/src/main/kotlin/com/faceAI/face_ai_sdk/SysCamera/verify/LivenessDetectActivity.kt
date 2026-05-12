@@ -47,28 +47,28 @@ class LivenessDetectActivity : AbsBaseActivity() {
         const val MOTION_LIVENESS_TYPES = "MOTION_LIVENESS_TYPES" //动作活体种类
     }
 
-    private lateinit var tipsTextView: TextView
-    private lateinit var secondTipsTextView: TextView
+//    private lateinit var tipsTextView: TextView
+//    private lateinit var secondTipsTextView: TextView
+
     private lateinit var faceCoverView: FaceVerifyCoverView
     private val faceVerifyUtils = FaceVerifyUtils()
     private lateinit var cameraXFragment: FaceCameraXFragment
     private var retryTime = 0 //记录失败尝试的次数
     private var faceLivenessType = FaceLivenessType.MOTION //活体检测类型
     private var motionStepSize = 2 //动作活体的个数
-    private var motionTimeOut = 3 * motionStepSize + 1  //动作超时秒，低端机可以设置长一点
+    private var motionTimeOut = 3 * motionStepSize //动作超时秒
     private var motionLivenessTypes = "1,2,3,4,5" //【配置动作活体类型】1.张张嘴 2.微笑 3.眨眨眼 4.摇头 5.点头
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         hideSystemUI() //炫彩活体全屏显示各种颜色
         setContentView(R.layout.activity_liveness_detection)
-        tipsTextView = findViewById(R.id.tips_view)
-        secondTipsTextView = findViewById(R.id.second_tips_view)
+//        tipsTextView = findViewById(R.id.tips_view)
+//        secondTipsTextView = findViewById(R.id.second_tips_view)
         faceCoverView = findViewById(R.id.face_cover)
         findViewById<View>(R.id.back).setOnClickListener { finishFaceVerify(0, R.string.face_verify_result_cancel) }
 
         getIntentParams()    //接收三方插件的参数 数据
-
         val sharedPref = getSharedPreferences("FaceAISDK_SP", Context.MODE_PRIVATE)
         val cameraLensFacing = sharedPref.getInt(FRONT_BACK_CAMERA_FLAG, 0)
         val degree = sharedPref.getInt(SYSTEM_CAMERA_DEGREE, windowManager.defaultDisplay.rotation)
@@ -310,20 +310,14 @@ class LivenessDetectActivity : AbsBaseActivity() {
      * 主要提示
      */
     private fun setMainTips(resId: Int) {
-        tipsTextView.setText(resId)
+        faceCoverView.setTipsText(resId)
     }
 
     /**
      * 第二行提示
      */
     private fun setSecondTips(resId: Int) {
-        if (resId == 0) {
-            secondTipsTextView.text = ""
-            secondTipsTextView.visibility = View.INVISIBLE
-        } else {
-            secondTipsTextView.visibility = View.VISIBLE
-            secondTipsTextView.setText(resId)
-        }
+        faceCoverView.setSecondTipsText(resId)
     }
 
     /**

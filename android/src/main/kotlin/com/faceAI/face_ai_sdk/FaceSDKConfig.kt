@@ -8,6 +8,7 @@ import com.bumptech.glide.Glide
 import com.faceAI.face_ai_sdk.FaceAISettingsActivity.FRONT_BACK_CAMERA_FLAG
 import com.faceAI.face_ai_sdk.base.utils.VoicePlayer
 import com.tencent.mmkv.MMKV
+import com.faceAI.face_ai_sdk.base.utils.TTSPlayer
 
 /**
  * SDK 配置初始化
@@ -32,8 +33,10 @@ object FaceSDKConfig {
         //使用MMKV保存简单1:1人脸特征保存key为faceID,value为特征值 （人脸搜索的人脸特征放在SDK内置数据库中管理）
         MMKV.initialize(context)
 
-        //语音提示播报，现在都是播放录音文件。后期改为TTS吧
+        //语音提示播报，现在都是播放录音文件
         VoicePlayer.getInstance().init(context)
+
+//        TTSPlayer.getInstance().init(context)
 
         // 人脸图存储在App内部私有空间，SDK未做分区存储
         // Warming: 目前仅能存储在context.getCacheDir() 或者context.getFilesDir() 内部私有空间

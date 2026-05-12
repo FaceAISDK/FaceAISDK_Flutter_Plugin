@@ -14,9 +14,8 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-
+import com.faceAI.face_ai_sdk.base.view.FaceVerifyCoverView
 import androidx.appcompat.app.AlertDialog
-
 import com.ai.face.base.baseImage.BaseImageCallBack
 import com.ai.face.base.baseImage.BaseImageDispose
 import com.ai.face.base.baseImage.BaseImageDispose.PERFORMANCE_MODE_ACCURATE
@@ -72,7 +71,7 @@ class AddFaceFeatureActivity : AbsBaseActivity() {
     }
 
     private var needConfirmAdd = true   //是否需要弹窗给用户确认人脸信息,强烈建议需要确认
-    private lateinit var tipsTextView: TextView
+    private lateinit var faceCoverView: FaceVerifyCoverView
     private lateinit var baseImageDispose: BaseImageDispose
     private var faceID: String? = null
     private var addFaceType: String? = null
@@ -88,15 +87,10 @@ class AddFaceFeatureActivity : AbsBaseActivity() {
         super.onCreate(savedInstanceState)
         hideSystemUI()
         setContentView(R.layout.activity_add_face_image)
-        findViewById<View>(R.id.back)
-            .setOnClickListener { finishAddFace(0, "Cancel by user", "") }
+        findViewById<View>(R.id.back).setOnClickListener { finishAddFace(0, "Cancel by user", "") }
 
-        tipsTextView = findViewById(R.id.tips_view)
+        faceCoverView = findViewById(R.id.face_cover)
         addFaceType = intent.getStringExtra(ADD_FACE_IMAGE_TYPE_KEY)
-
-        if (FaceSDKConfig.isDebugMode(this)) {
-            addFacePerformanceMode = PERFORMANCE_MODE_FAST
-        }
 
         val intent = intent
         if (intent != null) {
@@ -184,16 +178,16 @@ class AddFaceFeatureActivity : AbsBaseActivity() {
      */
     private fun addFaceTips(tipsCode: Int) {
         when (tipsCode) {
-            NO_FACE_REPEATEDLY -> tipsTextView.setText(R.string.no_face_detected_tips)
-            FACE_TOO_SMALL -> tipsTextView.setText(R.string.come_closer_tips)
-            FACE_TOO_LARGE -> tipsTextView.setText(R.string.far_away_tips)
-            CLOSE_EYE -> tipsTextView.setText(R.string.no_close_eye_tips)
-            HEAD_CENTER -> tipsTextView.setText(R.string.keep_face_tips) //英文翻译不太友善
-            TILT_HEAD -> tipsTextView.setText(R.string.no_tilt_head_tips)
-            HEAD_LEFT -> tipsTextView.setText(R.string.head_turn_left_tips)
-            HEAD_RIGHT -> tipsTextView.setText(R.string.head_turn_right_tips)
-            HEAD_UP -> tipsTextView.setText(R.string.no_look_up_tips)
-            HEAD_DOWN -> tipsTextView.setText(R.string.no_look_down_tips)
+            NO_FACE_REPEATEDLY -> faceCoverView.setTipsText(R.string.no_face_detected_tips)
+            FACE_TOO_SMALL -> faceCoverView.setTipsText(R.string.come_closer_tips)
+            FACE_TOO_LARGE -> faceCoverView.setTipsText(R.string.far_away_tips)
+            CLOSE_EYE -> faceCoverView.setTipsText(R.string.no_close_eye_tips)
+            HEAD_CENTER -> faceCoverView.setTipsText(R.string.keep_face_tips) //英文翻译不太友善
+            TILT_HEAD -> faceCoverView.setTipsText(R.string.no_tilt_head_tips)
+            HEAD_LEFT -> faceCoverView.setTipsText(R.string.head_turn_left_tips)
+            HEAD_RIGHT -> faceCoverView.setTipsText(R.string.head_turn_right_tips)
+            HEAD_UP -> faceCoverView.setTipsText(R.string.no_look_up_tips)
+            HEAD_DOWN -> faceCoverView.setTipsText(R.string.no_look_down_tips)
         }
     }
 

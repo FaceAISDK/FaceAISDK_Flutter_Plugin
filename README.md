@@ -39,7 +39,7 @@ Add these configurations to `android/app/build.gradle.kts`:
 
 ```kotlin
 android {
-    // Java 17 required
+    // Java 17 / 11 required
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -68,14 +68,6 @@ android {
 }
 ```
 
-### 3. Signing Key Registration
-
-FaceAISDK validates the app's **package name + signing certificate**. You must register your signing key with the SDK provider:
-
-- Contact: FaceAISDK.Service@gmail.com
-- GitHub: https://github.com/FaceAISDK/FaceAISDK_Android
-
-For development/testing, you can use the demo keystore (`FaceAIPublic`) with `applicationId = "com.ai.face.Demo"`.
 
 ## iOS Setup (Required)
 
@@ -91,7 +83,7 @@ target 'Runner' do
 
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
 
-  pod 'FaceAISDK_Core', :git => 'https://github.com/FaceAISDK/FaceAISDK_Core.git', :tag => '2026.03.27'
+  pod 'FaceAISDK_Core', :git => 'https://github.com/FaceAISDK/FaceAISDK_Core.git', :tag => '2026.04.27'
 end
 ```
 
@@ -166,7 +158,7 @@ Compare a live face against a stored face:
 final result = await faceAiSdk.startVerification(
   faceId: "user_123",        // face ID for stored lookup (faceId or faceFeature required)
   faceFeature: null,          // or pass face feature string directly
-  threshold: 0.85,            // 0.75 - 0.95
+  threshold: 0.85,            // 0.8 - 0.95
   livenessType: 1,            // 0=NONE, 1=MOTION, 2=MOTION+COLOR, 3=COLOR, 4=SILENT
   motionStepSize: 1,          // 1-2 steps
   motionTimeout: 10,          // 3-22 seconds
@@ -188,7 +180,7 @@ Detect if the face is a real person (no face matching):
 ```dart
 final result = await faceAiSdk.startLiveness(
   livenessType: 1,          // 1=MOTION, 2=MOTION+COLOR, 3=COLOR, 4=SILENT
-  motionStepSize: 1,
+  motionStepSize: 2,
   motionTimeout: 10,
   motionTypes: "1,2,3",
   format: "base64",
@@ -216,16 +208,18 @@ if (result['code'] == 1) {
 
 ## Result Codes
 
-| Code | Meaning |
-|------|---------|
-| 0 | Cancelled by user |
-| 1 | Success |
-| 2 | Verification failed (not same person) |
-| 3 | Timeout |
-| 4 | Timeout (exceeded retry limit) |
-| 5 | No face detected repeatedly |
-| 10 | Liveness detection completed |
-| 11 | Silent liveness failed |
+| Code | Meaning                               |
+|------|---------------------------------------|
+| 0    | Cancelled by user                     |
+| 1    | Success                               |
+| 2    | Verification failed (not same person) |
+| 3    | Timeout                               |
+| 4    | Timeout (exceeded retry limit)        |
+| 5    | No face detected repeatedly           |
+| 10   | Liveness detection completed          |
+| 11   | Silent liveness failed                |
+| 12   | No Face Feature exist                 |
+
 
 ## Liveness Types
 
@@ -251,13 +245,7 @@ Comma-separated string of motion IDs:
 
 ## Troubleshooting
 
-### SIGSEGV crash in `checkModel`
 
-The SDK validates your app's **package name + signing certificate**. If they don't match the registered values, the native code crashes. Make sure:
-
-1. Your `applicationId` is registered with FaceAISDK
-2. Your signing keystore is registered with FaceAISDK
-3. `android:extractNativeLibs="true"` is set in AndroidManifest.xml
 ### Camera not working
 
 Ensure camera permission is granted at runtime. The plugin declares `<uses-permission android:name="android.permission.CAMERA" />` automatically on Android. On iOS, add `NSCameraUsageDescription` to `Info.plist`.
@@ -272,7 +260,7 @@ Make sure you added the `FaceAISDK_Core` pod to your Podfile and ran `pod instal
 
 ## License
 
-See [LICENSE](LICENSE) for details.
+**See [LICENSE](LICENSE) for details.**
 
 ## Credits
 

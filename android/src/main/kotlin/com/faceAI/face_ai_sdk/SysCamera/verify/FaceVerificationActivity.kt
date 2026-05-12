@@ -70,13 +70,13 @@ class FaceVerificationActivity : AbsBaseActivity() {
     private var passedFaceFeature: String? = null //从Flutter直接传递的人脸特征值
     private var verifyThreshold = 0.85f //1:1 人脸识别对比通过的阈值，根据使用场景自行调整
     private var motionStepSize = 1 //动作活体的个数
-    private var motionTimeOut = motionStepSize * 3 + 1  //动作超时秒，低端机可以设置长一点
+    private var motionTimeOut = motionStepSize * 3   //动作超时秒
     private var motionLivenessTypes = "1,2,3,4,5" //动作活体种类用英文","隔开； 1.张张嘴 2.微笑 3.眨眨眼 4.摇头 5.点头
     private var faceLivenessType = FaceLivenessType.MOTION  //活体检测类型.20251220  新加 MOTION_COLOR_FLASH炫彩活体
     private var allowRetry = true //timeout时是否允许retry
     private val faceVerifyUtils = FaceVerifyUtils()
-    private lateinit var tipsTextView: TextView
-    private lateinit var secondTipsTextView: TextView
+//    private lateinit var tipsTextView: TextView
+//    private lateinit var secondTipsTextView: TextView
     private lateinit var faceCoverView: FaceVerifyCoverView
     private lateinit var cameraXFragment: FaceCameraXFragment  //摄像头管理源码，可自行管理摄像头
 
@@ -84,8 +84,8 @@ class FaceVerificationActivity : AbsBaseActivity() {
         super.onCreate(savedInstanceState)
         hideSystemUI() //炫彩活体全屏显示各种颜色
         setContentView(R.layout.activity_face_verification)
-        tipsTextView = findViewById(R.id.tips_view)
-        secondTipsTextView = findViewById(R.id.second_tips_view) //次要提示
+//        tipsTextView = findViewById(R.id.tips_view)
+//        secondTipsTextView = findViewById(R.id.second_tips_view) //次要提示
         faceCoverView = findViewById(R.id.face_cover)
         findViewById<View>(R.id.back).setOnClickListener { finishFaceVerify(0, R.string.face_verify_result_cancel) }
 
@@ -160,7 +160,7 @@ class FaceVerificationActivity : AbsBaseActivity() {
     private fun initFaceVerificationParam(faceFeature: String) {
         //建议老的低配设备减少活体检测步骤，加长活体检测 人脸对比时间。
         val faceProcessBuilder = FaceProcessBuilder.Builder(this)
-            .setThreshold(verifyThreshold)          //阈值设置，范围限 [0.75,0.95] ,低配摄像头可适量放低，默认0.85
+            .setThreshold(verifyThreshold)          //阈值设置，范围限 [0.8,0.9] ,低配摄像头可适量放低，默认0.85
             .setFaceFeature(faceFeature)            //1:1 人脸识别对比的底片人脸特征值字符串
             .setCameraType(FaceAICameraType.SYSTEM_CAMERA)  //相机类型，目前分为3种
             .setCompareDurationTime(3000)           //人脸识别对比时间[3000,6000] 毫秒。相似度低会持续识别比对的时间
@@ -418,20 +418,14 @@ class FaceVerificationActivity : AbsBaseActivity() {
      * 主要提示
      */
     private fun setMainTips(resId: Int) {
-        tipsTextView.setText(resId)
+        faceCoverView.setTipsText(resId)
     }
 
     /**
      * 第二行提示
      */
     private fun setSecondTips(resId: Int) {
-        if (resId == 0) {
-            secondTipsTextView.text = ""
-            secondTipsTextView.visibility = View.INVISIBLE
-        } else {
-            secondTipsTextView.visibility = View.VISIBLE
-            secondTipsTextView.setText(resId)
-        }
+        faceCoverView.setSecondTipsText(resId)
     }
 
     /**

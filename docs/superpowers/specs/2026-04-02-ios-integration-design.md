@@ -7,7 +7,7 @@ Integrate the native iOS FaceAI SDK into the Flutter plugin by copying and adapt
 ## Decisions
 
 - **Presentation style**: UIHostingController presented as fullscreen modal (option A — matches Android's Activity-based pattern)
-- **Dependency**: `FaceAISDK_Core` pod, tag `2026.03.27`
+- **Dependency**: `FaceAISDK_Core` pod, tag `2026.04.27`
 - **Storage**: UserDefaults for face features (same as native iOS app)
 - **Scope**: Only implement methods already in Dart API (`initializeSDK`, `startVerification`, `startLiveness`, `startEnroll`, `addFace`) — no new Dart API methods
 

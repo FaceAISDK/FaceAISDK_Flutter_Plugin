@@ -1,137 +1,175 @@
 package com.faceAI.face_ai_sdk.base.view
 
+import com.faceAI.face_ai_sdk.R
+import com.faceAI.face_ai_sdk.base.utils.ScreenUtils
 import android.animation.ValueAnimator
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Matrix
-import android.graphics.Paint
-import android.graphics.Path
-import android.graphics.Point
-import android.graphics.RectF
-import android.graphics.SweepGradient
+import android.content.res.TypedArray
+import android.graphics.*
+import android.text.TextUtils
 import android.util.AttributeSet
 import android.view.View
 import android.view.animation.DecelerateInterpolator
-
-import androidx.annotation.NonNull
+import androidx.annotation.ColorInt
+import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
-
-import com.faceAI.face_ai_sdk.R
-import com.faceAI.face_ai_sdk.base.utils.ScreenUtils
-import kotlin.math.max
+import kotlin.math.abs
 import kotlin.math.min
 
 /**
- * [性能优化版] 人脸识别覆盖视图
- * 优化点：移除 saveLayer 离屏渲染，改用 Path 奇偶填充规则实现挖孔
+ * 人脸识别覆盖视图
+ * - 半透明遮罩 + 圆形镂空（支持展开动画）
+ * - 环形进度条（渐变色）
+ * - 上方双行提示文本（支持淡入淡出）
  */
 class FaceVerifyCoverView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
+    // ==================== 可配置属性 ====================
+    private var mFlashColor: Int = Color.WHITE
+    private val mStartColor: Int
+    private val mEndColor: Int
+    private val mShowProgress: Boolean
+    private val mTipTextColor: Int
+    private val mTipTextBgColor: Int
+    private val mTipTextSize: Float
+    private var mCircleMargin = -1
+    private var mCirclePaddingBottom = 0
 
-    // --- 核心属性 ---
-    private var mFlashColor: Int
-    private var mStartColor: Int
-    private var mEndColor: Int
-    private var mShowProgress: Boolean
-    private var mCircleMargin: Int
-    private var mCirclePaddingBottom: Int
-
-    // --- 尺寸相关 ---
-    private val mCenterPoint = Point()
+    // ==================== 几何参数 ====================
+    private val mCenterPoint = PointF()
     private var mTargetRadius = 0f
     private var mCurrentRadius = 0f
     private var mBgArcWidth = 0f
 
-    // --- 绘制对象 ---
-    private lateinit var mBackgroundPaint: Paint   // 背景画笔
-    private lateinit var mBgArcPaint: Paint        // 进度条底色画笔
-    private lateinit var mProgressPaint: Paint     // 进度条画笔
+    // ==================== 绘图对象 ====================
+    private val mBackgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val mBgArcPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val mProgressPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val mTipsPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val mSecondTipsPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val mTextBgPaint = Paint(Paint.ANTI_ALIAS_FLAG)
 
-    // 优化：使用 Path 实现挖孔，代替 Xfermode
     private val mHolePath = Path()
-    private val mFullRect = RectF() // 视图全屏区域
-    private val mArcRectF = RectF() // 进度条区域
+    private val mFullRect = RectF()
+    private val mArcRectF = RectF()
+    private val mTextBgRect = RectF()
+    private val mGradientMatrix = Matrix()
 
-    private lateinit var mSweepGradient: SweepGradient
-    private val mGradientMatrix = Matrix() // 用于旋转渐变
+    // ==================== 文本与动画 ====================
+    private var mTipsText = ""
+    private var mSecondTipsText = ""
+    private var mTipsWidth = 0f
+    private var mSecondTipsWidth = 0f
 
-    // --- 动画 ---
+    private var mSecondTipsAlpha = 0
+    private var mTargetSecondAlpha = -1 // 记录动画目标值，避免高频打断
+    private var mSecondTipsAnimator: ValueAnimator? = null
+
+    private var mTextSpacing = 0f
+    private var mTextPaddingHorizontal = 0f
+    private var mTextPaddingVertical = 0f
+    private var mTextBgRadius = 0f
+
     private var mOpenAnimator: ValueAnimator? = null
     private var mCurrentProgressAngle = 0f
 
-    companion object {
-        // 调整起始角度：270度代表从12点钟方向开始
-        private const val START_ANGLE = 270
-        private const val MAX_ANGLE = 360
-    }
-
     init {
-        if (attrs != null) {
-            val array = context.obtainStyledAttributes(attrs, R.styleable.FaceVerifyCoverView)
-            mCircleMargin = array.getDimensionPixelSize(R.styleable.FaceVerifyCoverView_circle_margin, 30)
-            mCirclePaddingBottom = array.getDimensionPixelSize(R.styleable.FaceVerifyCoverView_circle_padding_bottom, 0)
-            mFlashColor = array.getColor(R.styleable.FaceVerifyCoverView_flash_color, Color.WHITE)
-            mStartColor = array.getColor(R.styleable.FaceVerifyCoverView_progress_start_color, Color.LTGRAY)
-            mEndColor = array.getColor(R.styleable.FaceVerifyCoverView_progress_end_color, Color.LTGRAY)
-            mShowProgress = array.getBoolean(R.styleable.FaceVerifyCoverView_show_progress, true)
-            array.recycle()
-        } else {
-            mCircleMargin = 33
-            mCirclePaddingBottom = 0
-            mFlashColor = Color.WHITE
-            mStartColor = Color.LTGRAY
-            mEndColor = Color.LTGRAY
-            mShowProgress = true
-        }
+        val array: TypedArray = context.obtainStyledAttributes(attrs, R.styleable.FaceVerifyCoverView)
 
+        // 读取通用属性
+        mFlashColor = array.getColor(R.styleable.FaceVerifyCoverView_flash_color, Color.WHITE)
+        mStartColor = array.getColor(R.styleable.FaceVerifyCoverView_progress_start_color, Color.LTGRAY)
+        mEndColor = array.getColor(R.styleable.FaceVerifyCoverView_progress_end_color, Color.LTGRAY)
+        mShowProgress = array.getBoolean(R.styleable.FaceVerifyCoverView_show_progress, true)
+
+        // 读取文字属性
+        mTipTextColor = array.getColor(R.styleable.FaceVerifyCoverView_tip_text_color, Color.WHITE)
+        mTipTextBgColor = array.getColor(
+            R.styleable.FaceVerifyCoverView_tip_text_bg_color,
+            ContextCompat.getColor(context, R.color.face_main_color)
+        )
+
+        // 默认 19sp
+        val defaultTextSize = 19 * context.resources.displayMetrics.scaledDensity
+        mTipTextSize = array.getDimension(R.styleable.FaceVerifyCoverView_tip_text_size, defaultTextSize)
+
+        array.recycle()
         initPaints(context)
     }
 
     private fun initPaints(context: Context) {
         mBgArcWidth = ScreenUtils.dp2px(context, 2f).toFloat()
 
-        // 1. 背景画笔 (直接画出带孔的背景)
-        mBackgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        mBackgroundPaint.apply {
             color = mFlashColor
             style = Paint.Style.FILL
         }
 
-        // 2. 进度条底色
-        mBgArcPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        mBgArcPaint.apply {
             color = ContextCompat.getColor(context, R.color.half_grey)
             style = Paint.Style.STROKE
             strokeWidth = mBgArcWidth
             strokeCap = Paint.Cap.ROUND
         }
 
-        // 3. 进度条
-        mProgressPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        mProgressPaint.apply {
             style = Paint.Style.STROKE
             strokeWidth = mBgArcWidth
             strokeCap = Paint.Cap.ROUND
         }
+
+        mTipsPaint.apply {
+            color = mTipTextColor
+            textSize = mTipTextSize
+            textAlign = Paint.Align.CENTER
+            isFakeBoldText = true
+        }
+
+        mSecondTipsPaint.apply {
+            color = mTipTextColor
+            textSize = mTipTextSize * 0.88f
+            textAlign = Paint.Align.CENTER
+            isFakeBoldText = true
+        }
+
+        mTextBgPaint.apply {
+            color = mTipTextBgColor
+            style = Paint.Style.FILL
+        }
+
+        mTextSpacing = ScreenUtils.dp2px(context, 7f).toFloat()
+        mTextPaddingHorizontal = ScreenUtils.dp2px(context, 17f).toFloat()
+        mTextPaddingVertical = ScreenUtils.dp2px(context, 5f).toFloat()
+        mTextBgRadius = ScreenUtils.dp2px(context, 20f).toFloat()
+
+        setTipsText(R.string.keep_face_tips)
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
+        updateLayoutParameters(w, h)
+    }
 
-        mCircleMargin = mCircleMargin + getScreenAspectRatioDx()
+    private fun updateLayoutParameters(w: Int, h: Int) {
+        if (w <= 0 || h <= 0) return
 
-        // 记录全屏范围
         mFullRect.set(0f, 0f, w.toFloat(), h.toFloat())
+        val shorterSide = min(w, h)
 
-        // 计算圆心 X Y
-        mCenterPoint.x = w / 2
-        mCenterPoint.y = h / 2 - mCirclePaddingBottom
+        // 动态调整 Margin Size
+        MARGIN_SIZE = if (w > h) 5 else 8
 
-        // 最大半径
-        mTargetRadius = min(w / 2f, h / 2f) - mCircleMargin
+        if (mCircleMargin < 0) mCircleMargin = shorterSide / MARGIN_SIZE
 
-        // 预计算进度条区域
+        val basePadding = shorterSide / MARGIN_SIZE
+        mCirclePaddingBottom = if (w > h) 0 else basePadding
+
+        mCenterPoint.set(w / 2f, (h / 2f) - mCirclePaddingBottom.toFloat())
+        mTargetRadius = (shorterSide / 2f) - mCircleMargin.toFloat()
+
         val halfStroke = mBgArcWidth / 2f
         mArcRectF.set(
             mCenterPoint.x - mTargetRadius - halfStroke,
@@ -140,118 +178,157 @@ class FaceVerifyCoverView @JvmOverloads constructor(
             mCenterPoint.y + mTargetRadius + halfStroke
         )
 
-        // 初始化渐变 & 矩阵旋转
-        updateGradient()
-    }
+        val sweepGradient = SweepGradient(mCenterPoint.x, mCenterPoint.y, mStartColor, mEndColor)
+        mGradientMatrix.setRotate(START_ANGLE.toFloat(), mCenterPoint.x, mCenterPoint.y)
+        sweepGradient.setLocalMatrix(mGradientMatrix)
+        mProgressPaint.shader = sweepGradient
 
-    /**
-     * 根据屏幕宽高比计算 0-10 的评分
-     * 10分 = 16:9 (传统屏幕，较短)
-     * 0分  = 20:9 (全面屏，很长)
-     * @return 0 到 10 之间的整数
-     */
-    fun getScreenAspectRatioDx(): Int {
-        val score: Float
-        val height = max(height, width)
-        val width = min(height, width)
-
-        // 1. 计算当前宽高比 (注意转为 float)
-        val currentRatio = width.toFloat() / height
-
-        // 2. 定义阈值
-        val RATIO_9_16 = 9f / 16f // 0.5625 (较宽/短) -> 对应 10 分
-        val RATIO_9_20 = 9f / 20f // 0.4500 (较窄/长) -> 对应 0 分
-
-        // 3. 处理边界情况
-        score = if (currentRatio >= RATIO_9_16) {
-            12f
-        } else if (currentRatio <= RATIO_9_20) {
-            0f
-        } else {
-            // 4. 线性插值计算
-            val range = RATIO_9_16 - RATIO_9_20
-            val offset = currentRatio - RATIO_9_20
-            (offset / range) * 12
+        if (mOpenAnimator == null || !mOpenAnimator!!.isRunning) {
+            mCurrentRadius = mTargetRadius
         }
-        val scale = resources.displayMetrics.density
-        return (score * scale + 0.5f).toInt()
-    }
-
-    private fun updateGradient() {
-        mSweepGradient = SweepGradient(mCenterPoint.x.toFloat(), mCenterPoint.y.toFloat(), mStartColor, mEndColor)
-        // 旋转渐变，使其起始颜色对齐到 START_ANGLE (270度)
-        mGradientMatrix.setRotate(START_ANGLE.toFloat(), mCenterPoint.x.toFloat(), mCenterPoint.y.toFloat())
-        mSweepGradient.setLocalMatrix(mGradientMatrix)
-        mProgressPaint.shader = mSweepGradient
     }
 
     override fun onDraw(canvas: Canvas) {
-        // 1. 绘制带"挖孔"的背景 (高性能方式)
-        drawHollowBackgroundPath(canvas)
+        mHolePath.reset()
+        mHolePath.addRect(mFullRect, Path.Direction.CW)
+        if (mCurrentRadius > 0) {
+            mHolePath.addCircle(mCenterPoint.x, mCenterPoint.y, mCurrentRadius, Path.Direction.CW)
+        }
+        mHolePath.fillType = Path.FillType.EVEN_ODD
+        canvas.drawPath(mHolePath, mBackgroundPaint)
 
-        // 2. 绘制进度条
         if (mShowProgress) {
-            // 绘制底色圆环
             canvas.drawArc(mArcRectF, START_ANGLE.toFloat(), MAX_ANGLE.toFloat(), false, mBgArcPaint)
-            // 绘制彩色进度 (Shader已在onSizeChanged处理)
             canvas.drawArc(mArcRectF, START_ANGLE.toFloat(), mCurrentProgressAngle, false, mProgressPaint)
         }
+
+        drawTipsText(canvas)
     }
 
-    /**
-     * 使用 Path.FillType.EVEN_ODD 实现挖孔
-     * 原理：路径包含一个大矩形和一个小圆。奇偶规则下，重叠区域不填充。
-     */
-    private fun drawHollowBackgroundPath(canvas: Canvas) {
-        mHolePath.reset()
-        // 添加全屏矩形
-        mHolePath.addRect(mFullRect, Path.Direction.CW)
-        // 添加中间圆 (半径为动画值)
-        if (mCurrentRadius > 0) {
-            mHolePath.addCircle(mCenterPoint.x.toFloat(), mCenterPoint.y.toFloat(), mCurrentRadius, Path.Direction.CW)
+    private fun drawTipsText(canvas: Canvas) {
+        val hasFirst = mTipsText.isNotEmpty()
+        val hasSecond = mSecondTipsAlpha > 0 && mSecondTipsText.isNotEmpty()
+        if (!hasFirst && !hasSecond) return
+
+        val secondTipsY = mCenterPoint.y - mTargetRadius - mTextSpacing - mTextPaddingVertical - mSecondTipsPaint.descent()
+        val secondBgTop = secondTipsY + mSecondTipsPaint.ascent() - mTextPaddingVertical
+        val firstTipsY = secondBgTop - mTextSpacing - mTextPaddingVertical - mTipsPaint.descent()
+
+        if (hasSecond) {
+            val savedAlpha = mTextBgPaint.alpha
+            mSecondTipsPaint.alpha = mSecondTipsAlpha
+            mTextBgPaint.alpha = mSecondTipsAlpha
+            drawTextWithBackground(canvas, mSecondTipsText, mSecondTipsWidth, mCenterPoint.x, secondTipsY, mSecondTipsPaint)
+            mTextBgPaint.alpha = savedAlpha
         }
-        // 关键：设置填充模式为奇偶填充
-        mHolePath.fillType = Path.FillType.EVEN_ODD
 
-        canvas.drawPath(mHolePath, mBackgroundPaint)
+        if (hasFirst) {
+            drawTextWithBackground(canvas, mTipsText, mTipsWidth, mCenterPoint.x, firstTipsY, mTipsPaint)
+        }
     }
 
-    // --- 动画与控制 ---
+    private fun drawTextWithBackground(canvas: Canvas, text: String, textWidth: Float, x: Float, y: Float, paint: Paint) {
+        val bgWidth = textWidth + (mTextPaddingHorizontal * 2f)
+        mTextBgRect.set(
+            x - (bgWidth / 2f),
+            y + paint.ascent() - mTextPaddingVertical,
+            x + (bgWidth / 2f),
+            y + paint.descent() + mTextPaddingVertical
+        )
+        canvas.drawRoundRect(mTextBgRect, mTextBgRadius, mTextBgRadius, mTextBgPaint)
+        canvas.drawText(text, x, y, paint)
+    }
+
+    // ==================== 公开 API ====================
+
+    fun setTipsText(tips: String?) {
+        val newTips = tips ?: ""
+        if (this.mTipsText == newTips) return
+        this.mTipsText = newTips
+        this.mTipsWidth = mTipsPaint.measureText(mTipsText)
+        if (mTipsText.isNotEmpty()) {
+            mSecondTipsAnimator?.cancel()
+            mSecondTipsAlpha = 0
+            mTargetSecondAlpha = 0
+        }
+        invalidate()
+    }
+
+    fun setTipsText(@StringRes resId: Int) {
+        setTipsText(if (resId == 0) "" else context.getString(resId))
+    }
+
+    fun setSecondTipsText(tips: String?) {
+        if (tips.isNullOrEmpty()) {
+            animateSecondTipsAlpha(0)
+            return
+        }
+        if (tips == mSecondTipsText) {
+            animateSecondTipsAlpha(255)
+            return
+        }
+        this.mSecondTipsText = tips
+        this.mSecondTipsWidth = mSecondTipsPaint.measureText(mSecondTipsText)
+        animateSecondTipsAlpha(255)
+    }
+
+    fun setSecondTipsText(@StringRes resId: Int) {
+        setSecondTipsText(if (resId == 0) "" else context.getString(resId))
+    }
 
     fun setProgress(percent: Float) {
         if (!mShowProgress) return
-        val targetAngle = MAX_ANGLE * percent
-        this.mCurrentProgressAngle = min(targetAngle, MAX_ANGLE.toFloat())
+        mCurrentProgressAngle = min(MAX_ANGLE.toFloat() * percent, MAX_ANGLE.toFloat())
         invalidate()
     }
 
-    /**
-     * 炫彩活体更新屏幕颜色，人脸要离屏幕近一点
-     */
-    fun setFlashColor(color: Int) {
-        mFlashColor = color
-        mBackgroundPaint.color = mFlashColor // 记得更新画笔
-        invalidate()
+    fun setFlashColor(@ColorInt color: Int) {
+        if (mFlashColor != color) {
+            mFlashColor = color
+            mBackgroundPaint.color = mFlashColor
+            invalidate()
+        }
     }
 
-    // 更新底部间距
     fun setCirclePaddingBottom(paddingBottom: Int) {
         if (this.mCirclePaddingBottom != paddingBottom) {
             this.mCirclePaddingBottom = paddingBottom
-            requestLayout()
+            updateLayoutParameters(width, height)
+            invalidate()
         }
     }
 
     fun setMargin(newMargin: Int) {
         if (this.mCircleMargin != newMargin) {
-            mCircleMargin = newMargin
-            requestLayout()
+            this.mCircleMargin = newMargin
+            updateLayoutParameters(width, height)
+            invalidate()
+        }
+    }
+
+    // ==================== 动画处理 ====================
+
+    private fun animateSecondTipsAlpha(targetAlpha: Int) {
+        if (mSecondTipsAlpha == targetAlpha || mTargetSecondAlpha == targetAlpha) return
+        mTargetSecondAlpha = targetAlpha
+        mSecondTipsAnimator?.cancel()
+
+        val baseDuration = if (targetAlpha == 255) 200 else 400
+        val duration = (abs(targetAlpha - mSecondTipsAlpha).toFloat() / 255f * baseDuration).toLong()
+
+        mSecondTipsAnimator = ValueAnimator.ofInt(mSecondTipsAlpha, targetAlpha).apply {
+            setDuration(maxOf(duration, 50L))
+            addUpdateListener { animation ->
+                mSecondTipsAlpha = animation.animatedValue as Int
+                invalidate()
+            }
+            start()
         }
     }
 
     private fun startOpenAnimation() {
-        if (mOpenAnimator != null && mOpenAnimator!!.isRunning) {
-            mOpenAnimator!!.cancel()
+        if (mOpenAnimator?.isRunning == true) {
+            mOpenAnimator?.cancel()
         }
         mOpenAnimator = ValueAnimator.ofFloat(0f, mTargetRadius).apply {
             duration = 400
@@ -260,9 +337,11 @@ class FaceVerifyCoverView @JvmOverloads constructor(
                 mCurrentRadius = animation.animatedValue as Float
                 invalidate()
             }
+            start()
         }
-        mOpenAnimator!!.start()
     }
+
+    // ==================== 生命周期 ====================
 
     override fun onVisibilityChanged(changedView: View, visibility: Int) {
         super.onVisibilityChanged(changedView, visibility)
@@ -276,9 +355,19 @@ class FaceVerifyCoverView @JvmOverloads constructor(
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        if (mOpenAnimator != null) {
-            mOpenAnimator!!.cancel()
+        mOpenAnimator?.apply {
+            cancel()
             mOpenAnimator = null
         }
+        mSecondTipsAnimator?.apply {
+            cancel()
+            mSecondTipsAnimator = null
+        }
+    }
+
+    companion object {
+        var MARGIN_SIZE = 8
+        private const val START_ANGLE = 270
+        private const val MAX_ANGLE = 360
     }
 }
