@@ -119,7 +119,7 @@ public class FaceVerificationActivity extends AbsBaseActivity {
                 .setMotionLivenessStepSize(motionStepSize)
                 .setMotionLivenessTimeOut(motionTimeOut)
                 .setMotionLivenessTypes(motionLivenessTypes)
-                .setStopVerifyNoFaceRealTime(true)
+                .setStopVerifyNoFaceRealTime(false)
                 .setProcessCallBack(new ProcessCallBack() {
                     @Override
                     public void onVerifyMatched(boolean isMatched, float similarity, float livenessValue, Bitmap bitmap) {
@@ -169,12 +169,7 @@ public class FaceVerificationActivity extends AbsBaseActivity {
                 finishFaceVerify(VERIFY_SUCCESS, R.string.face_verify_result_success, similarity, livenessValue);
             }, 500);
         } else {
-            int code;
-            if (isVerifyMatched) {
-                code = SILENT_LIVENESS_FAILED;
-            } else {
-                code = VERIFY_FAILED;
-            }
+            int code = isVerifyMatched ? SILENT_LIVENESS_FAILED : VERIFY_FAILED;
             TTSPlayer.getInstance().playTTS(R.string.face_verify_failed);
 
             new AlertDialog.Builder(FaceVerificationActivity.this).setTitle(R.string.face_verify_failed_title).setMessage(R.string.face_verify_failed).setCancelable(false).setPositiveButton(R.string.know, (dialogInterface, i) -> {

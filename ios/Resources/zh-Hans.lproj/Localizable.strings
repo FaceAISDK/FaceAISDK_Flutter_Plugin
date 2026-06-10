@@ -1,3 +1,5 @@
+
+/* General UI */
 "About us" = "关于我们";
 "Add Face By Camera" = "SDK相机添加人脸";
 "Add Face From Album" = "从相册添加一人脸";
@@ -5,6 +7,16 @@
 "Confirm Add Face" = "确认录入此人脸图？";
 "Ensure face is clear" = "请录入无遮挡正脸清晰图";
 "Face Verify & Liveness" = "人脸识别+活体检测";
+"I Know" = "知道了";
+"Is Face Feature Exist" = "人脸特征值是否存在";
+"ONLY Liveness Detection" = "仅仅活体检测";
+"Retry" = "重试";
+"Save Face Feature" = "保存人脸特征";
+"Select from album" = "从相册选择";
+"Select Image" = "选择图片";
+"Verify Two Face Similarity" = "静态人脸相似度对比";
+
+/* Face SDK Tips (Code Based) */
 "Face_Tips_Code_-1" = "FaceSDK Version Too Old";
 "Face_Tips_Code_(code)" = "error";
 "Face_Tips_Code_0" = "请正对摄像头";
@@ -37,15 +49,7 @@
 "Face_Tips_Code_52" = "炫彩活体失败";
 "Face_Tips_Code_53" = "炫彩活体检测失败,光线亮度过高;如图遮挡高亮光源或室内光线柔和环境使用";
 "Face_Tips_Code_58" = "光线过强,避免强光照射";
-"Face_Tips_Code_60" = "静默活体检测失败";
+"Face_Tips_Code_60" = "活体检测失败,请确认光线环境柔和";
 "Face_Tips_Code_61" = "活体检测完成";
 "Face_Tips_Code_62" = "人脸识别成功";
 "Face_Tips_Code_63" = "人脸识别失败";
-"I Know" = "知道了";
-"Is Face Feature Exist" = "人脸特征值是否存在";
-"ONLY Liveness Detection" = "仅仅活体检测";
-"Retry" = "重试";
-"Save Face Feature" = "保存人脸特征";
-"Select from album" = "从相册选择";
-"Select Image" = "选择图片";
-"Verify Two Face Similarity" = "静态人脸相似度对比";
