@@ -21,7 +21,7 @@ public struct AddFaceByCamera: View {
      private func localizedTip(for code: Int) -> String {
          let tipsString = FaceAILocalization.localizedTip(for: code, defaultPrefix: "AddFace")
          if code != 0 && code != 1 && code != 11 {
-            // TTSPlayer.shared.speak(tipsString)
+             TTSPlayer.shared.speak(tipsString)
          }
          return tipsString
      }
@@ -38,7 +38,7 @@ public struct AddFaceByCamera: View {
     private func saveFaceAndFinish() {
         UserDefaults.standard.set(viewModel.faceFeatureBySDKCamera, forKey: faceID)
 
-        if FaceImageManger.saveFaceImage(faceName: faceID, faceImage: viewModel.croppedFaceImage) {
+        if FaceImageManager.saveFaceImage(faceName: faceID, faceImage: viewModel.croppedFaceImage) {
             print("saveFaceImage success")
         }
 
@@ -147,7 +147,7 @@ struct ConfirmAddFaceDialog: View {
             Image(uiImage: viewModel.croppedFaceImage)
                 .resizable()
                 .scaledToFill()
-                .frame(width: 130, height: 130)
+                .frame(width: 190, height: 220)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
                 .overlay(
                     RoundedRectangle(cornerRadius: 12)
@@ -190,7 +190,7 @@ struct ConfirmAddFaceDialog: View {
             .padding(.bottom, 18)
             .padding(.top, 5)
         }
-        .frame(width: cameraSize * 1.11)
+        .frame(width: cameraSize * 1.22)
         .background(Color.white)
         .cornerRadius(16)
         .shadow(color: Color.black.opacity(0.2), radius: 10, x: 0, y: 5)

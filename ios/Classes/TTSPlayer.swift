@@ -82,10 +82,10 @@ final class TTSPlayer: NSObject {
     ///   - pitch: 音调。默认 0.98，略微低沉，减少电子尖锐感
     ///   - policy: 播报策略
     func speak(_ text: String?,
-               language: String? = nil,
-               rate: Float = 0.5,
-               pitch: Float = 0.98,
-               policy: Policy = .dropIfBusy) {
+    language: String? = nil,
+    rate: Float = 0.5,
+    pitch: Float = 0.98,
+    policy: Policy = .dropIfBusy) {
         guard let text = text, !text.isEmpty else { return }
 
         guard Thread.isMainThread else {
@@ -97,7 +97,7 @@ final class TTSPlayer: NSObject {
 
         let now = CFAbsoluteTimeGetCurrent()
         if text == lastSpokenText && (now - lastSpokenTime) < dedupInterval {
-//            os_log("Dedup, skipping: %{public}@", log: log, type: .info, text)
+            //            os_log("Dedup, skipping: %{public}@", log: log, type: .info, text)
             return
         }
 
@@ -108,7 +108,7 @@ final class TTSPlayer: NSObject {
             break
         case .dropIfBusy:
             if synthesizer.isSpeaking {
-//                os_log("Busy, dropping: %{public}@", log: log, type: .info, text)
+                //                os_log("Busy, dropping: %{public}@", log: log, type: .info, text)
                 return
             }
         }
@@ -118,15 +118,15 @@ final class TTSPlayer: NSObject {
         let utterance = AVSpeechUtterance(string: text)
         let clampedRate = min(max(rate, 0), 1)
         utterance.rate = AVSpeechUtteranceMinimumSpeechRate
-            + clampedRate * (AVSpeechUtteranceMaximumSpeechRate - AVSpeechUtteranceMinimumSpeechRate)
-        
+        + clampedRate * (AVSpeechUtteranceMaximumSpeechRate - AVSpeechUtteranceMinimumSpeechRate)
+
         // 1. 调整音调，限制在合理范围内 (0.5 - 2.0)
         utterance.pitchMultiplier = min(max(pitch, 0.5), 2.0)
-        
+
         // 2. 增加发音前后的延迟，模拟真人换气和语义停顿
         utterance.preUtteranceDelay = 0.05
         utterance.postUtteranceDelay = 0.15
-        
+
         utterance.voice = cachedVoice(for: language)
 
         lastSpokenText = text
@@ -209,19 +209,19 @@ final class TTSPlayer: NSObject {
     private func addObservers() {
         let nc = NotificationCenter.default
         nc.addObserver(self, selector: #selector(handleInterruption),
-                       name: AVAudioSession.interruptionNotification, object: nil)
+            name: AVAudioSession.interruptionNotification, object: nil)
         nc.addObserver(self, selector: #selector(handleRouteChange),
-                       name: AVAudioSession.routeChangeNotification, object: nil)
+            name: AVAudioSession.routeChangeNotification, object: nil)
         #if canImport(UIKit)
         nc.addObserver(self, selector: #selector(handleDidEnterBackground),
-                       name: UIApplication.didEnterBackgroundNotification, object: nil)
+            name: UIApplication.didEnterBackgroundNotification, object: nil)
         #endif
     }
 
     @objc private func handleInterruption(_ notification: Notification) {
         guard let info = notification.userInfo,
-              let typeValue = info[AVAudioSessionInterruptionTypeKey] as? UInt,
-              let type = AVAudioSession.InterruptionType(rawValue: typeValue) else { return }
+        let typeValue = info[AVAudioSessionInterruptionTypeKey] as? UInt,
+        let type = AVAudioSession.InterruptionType(rawValue: typeValue) else { return }
 
         switch type {
         case .began:
@@ -233,8 +233,8 @@ final class TTSPlayer: NSObject {
             interruptedBySystem = false
 
             if shouldResume,
-               let options = info[AVAudioSessionInterruptionOptionKey] as? UInt,
-               AVAudioSession.InterruptionOptions(rawValue: options).contains(.shouldResume) {
+            let options = info[AVAudioSessionInterruptionOptionKey] as? UInt,
+            AVAudioSession.InterruptionOptions(rawValue: options).contains(.shouldResume) {
                 activateSessionIfNeeded()
                 synthesizer.continueSpeaking()
             } else if shouldResume {
@@ -248,8 +248,8 @@ final class TTSPlayer: NSObject {
 
     @objc private func handleRouteChange(_ notification: Notification) {
         guard let info = notification.userInfo,
-              let reasonValue = info[AVAudioSessionRouteChangeReasonKey] as? UInt,
-              let reason = AVAudioSession.RouteChangeReason(rawValue: reasonValue) else { return }
+        let reasonValue = info[AVAudioSessionRouteChangeReasonKey] as? UInt,
+        let reason = AVAudioSession.RouteChangeReason(rawValue: reasonValue) else { return }
 
         if reason == .oldDeviceUnavailable {
             pause()

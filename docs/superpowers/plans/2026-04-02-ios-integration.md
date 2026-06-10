@@ -65,7 +65,7 @@ Edit `example/ios/Podfile` to add the FaceAISDK_Core git source. Add this near t
 platform :ios, '15.5'
 
 # FaceAISDK_Core source
-pod 'FaceAISDK_Core', :git => 'https://github.com/FaceAISDK/FaceAISDK_Core.git', :tag => '2026.03.27'
+pod 'FaceAISDK_Core', :git => 'https://github.com/FaceAISDK/FaceAISDK_Core.git', :tag => '2026.05.28.xcode15'
 ```
 
 The `pod 'FaceAISDK_Core'` line goes inside the `target 'Runner' do` block, after `flutter_install_all_ios_pods`. The platform line replaces the commented-out one at the top.
@@ -106,7 +106,7 @@ target 'Runner' do
 
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
 
-  pod 'FaceAISDK_Core', :git => 'https://github.com/FaceAISDK/FaceAISDK_Core.git', :tag => '2026.03.27'
+  pod 'FaceAISDK_Core', :git => 'https://github.com/FaceAISDK/FaceAISDK_Core.git', :tag => '2026.05.28.xcode15'
 
   target 'RunnerTests' do
     inherit! :search_paths
@@ -374,7 +374,7 @@ public struct AddFaceByCamera: View {
                             onConfirm: {
                                 UserDefaults.standard.set(viewModel.faceFeatureBySDKCamera, forKey: faceID)
 
-                                if FaceImageManger.saveFaceImage(faceName: faceID, faceImage: viewModel.croppedFaceImage) {
+                                if FaceImageManager.saveFaceImage(faceName: faceID, faceImage: viewModel.croppedFaceImage) {
                                     print("saveFaceImage success")
                                 }
 
@@ -696,7 +696,7 @@ struct VerifyFaceView: View {
             } else {
                 showToast = true
 
-                if FaceImageManger.saveFaceImage(faceName: faceID, faceImage: viewModel.faceVerifyResult.faceImage) {
+                if FaceImageManager.saveFaceImage(faceName: faceID, faceImage: viewModel.faceVerifyResult.faceImage) {
                     print("saveFaceImage success")
                 }
 
@@ -903,7 +903,7 @@ struct LivenessDetectView: View {
             } else {
                 showToast = true
 
-                if FaceImageManger.saveFaceImage(faceName: "Liveness", faceImage: viewModel.faceVerifyResult.faceImage) {
+                if FaceImageManager.saveFaceImage(faceName: "Liveness", faceImage: viewModel.faceVerifyResult.faceImage) {
                     // saved
                 }
 
@@ -1256,7 +1256,7 @@ public class FaceAiSdkPlugin: NSObject, FlutterPlugin {
     // MARK: - Helper: Load Face Image
 
     private func loadFaceImage(faceName: String, format: String) -> String? {
-        guard let base64 = FaceImageManger.faceImageToBase64(fileName: faceName) else {
+        guard let base64 = FaceImageManager.faceImageToBase64(fileName: faceName) else {
             return nil
         }
 
@@ -1404,7 +1404,7 @@ Common issues to watch for:
 - `Color.faceMain` not found → ensure the `Color` extension is in `CustomToastView.swift`
 - `FaceCameraSize` duplicate symbol → ensure it's only defined once (in `AddFaceByCamera.swift`)
 - `VerifyResultCode` not accessible → it comes from `FaceAISDK_Core`, ensure `import FaceAISDK_Core` is in each file
-- `FaceImageManger` (note: original uses this spelling, not "Manager") → comes from `FaceAISDK_Core`
+- `FaceImageManager` (note: original uses this spelling, not "Manager") → comes from `FaceAISDK_Core`
 - SwiftUI view init parameter ordering issues → match exact parameter order from struct definitions
 
 - [ ] **Step 4: Commit any fixes**

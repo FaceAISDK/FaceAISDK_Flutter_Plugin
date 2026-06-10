@@ -14,10 +14,13 @@
 
         <!--炫彩颜色，改变背景色-->
         <attr name="flash_color" format="color" />
+        <attr name="background_color" format="color" />
         <attr name="progress_start_color" format="color" />
         <attr name="progress_end_color" format="color" />
         <attr name="show_progress" format="boolean" />
 
     </declare-styleable>
+
+
 
 </resources>

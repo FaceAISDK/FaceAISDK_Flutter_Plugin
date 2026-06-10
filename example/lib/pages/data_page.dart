@@ -248,7 +248,7 @@ class _DataPageState extends State<DataPage> {
                               ? [
                                   BoxShadow(
                                     color: AppColors.primary
-                                        .withValues(alpha: 0.2),
+                                        .withOpacity(0.2),
                                     blurRadius: 16,
                                     offset: const Offset(0, 6),
                                   ),
@@ -310,7 +310,7 @@ class _DataPageState extends State<DataPage> {
                     key: const ValueKey('success'),
                     icon: Icons.check_circle_rounded,
                     iconColor: AppColors.primary,
-                    bgColor: AppColors.primary.withValues(alpha: 0.1),
+                    bgColor: AppColors.primary.withOpacity(0.1),
                     title: 'Face Enrolled Successfully',
                   )
                 : _enrollState == _EnrollState.error
@@ -318,7 +318,7 @@ class _DataPageState extends State<DataPage> {
                         key: const ValueKey('error'),
                         icon: Icons.error_rounded,
                         iconColor: AppColors.error,
-                        bgColor: AppColors.error.withValues(alpha: 0.1),
+                        bgColor: AppColors.error.withOpacity(0.1),
                         title: 'Enrollment Failed',
                       )
                     : const SizedBox.shrink(),
@@ -411,7 +411,7 @@ class _FeedbackCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: iconColor.withValues(alpha: 0.15),
+              color: iconColor.withOpacity(0.15),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(icon, color: iconColor, size: 22),
@@ -453,7 +453,7 @@ class _RegisteredFaceTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF191C1B).withValues(alpha: 0.06),
+            color: const Color(0xFF191C1B).withOpacity(0.06),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -492,11 +492,11 @@ class _RegisteredFaceTile extends StatelessWidget {
               // Name
               Padding(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
                 child: Text(
                   face.faceId,
                   style: GoogleFonts.manrope(
-                    fontSize: 13,
+                    fontSize: 12,
                     fontWeight: FontWeight.w700,
                     color: AppColors.onSurface,
                   ),
@@ -518,7 +518,7 @@ class _RegisteredFaceTile extends StatelessWidget {
                 width: 28,
                 height: 28,
                 decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.45),
+                  color: Colors.black.withOpacity(0.45),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(

@@ -108,7 +108,7 @@ class _UseCaseCard extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.12),
+                  color: color.withOpacity(0.12),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
@@ -150,7 +150,7 @@ class _UseCaseCard extends StatelessWidget {
                           horizontal: 14, vertical: 8),
                       decoration: BoxDecoration(
                         color: AppColors.surfaceContainerHighest
-                            .withValues(alpha: 0.5),
+                            .withOpacity(0.5),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Text(

@@ -1,8 +1,8 @@
 PODS:
-  - face_ai_sdk (0.0.1):
+  - face_ai_sdk (0.0.2):
     - FaceAISDK_Core
     - Flutter
-  - FaceAISDK_Core (2026.04.27):
+  - FaceAISDK_Core (2026.06.10):
     - GoogleMLKit/FaceDetection (= 9.0.0)
     - TensorFlowLiteSwift (= 2.17.0)
   - Flutter (1.0.0)
@@ -71,7 +71,7 @@ PODS:
 
 DEPENDENCIES:
   - face_ai_sdk (from `.symlinks/plugins/face_ai_sdk/ios`)
-  - FaceAISDK_Core (from `https://github.com/FaceAISDK/FaceAISDK_Core.git`, tag `2026.04.27`)
+  - FaceAISDK_Core (from `https://github.com/FaceAISDK/FaceAISDK_Core.git`, tag `2026.06.10`)
   - Flutter (from `Flutter`)
   - integration_test (from `.symlinks/plugins/integration_test/ios`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
@@ -98,7 +98,7 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/face_ai_sdk/ios"
   FaceAISDK_Core:
     :git: https://github.com/FaceAISDK/FaceAISDK_Core.git
-    :tag: 2026.04.27
+    :tag: 2026.06.10
   Flutter:
     :path: Flutter
   integration_test:
@@ -111,11 +111,11 @@ EXTERNAL SOURCES:
 CHECKOUT OPTIONS:
   FaceAISDK_Core:
     :git: https://github.com/FaceAISDK/FaceAISDK_Core.git
-    :tag: 2026.04.27
+    :tag: 2026.06.10
 
 SPEC CHECKSUMS:
-  face_ai_sdk: 299ce67367e63b21947159469a84fd79f57d6f34
-  FaceAISDK_Core: bcb2508eebc1639da7718358b8aa557efd4c0c7b
+  face_ai_sdk: 423a40eb6787a6c24e442e860bcf78c5bf126973
+  FaceAISDK_Core: 7ea041524e945c632d153be48ff7fee76a945579
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleMLKit: b1eee21a41c57704fe72483b15c85cb2c0cd7444
@@ -134,6 +134,6 @@ SPEC CHECKSUMS:
   TensorFlowLiteSwift: 723fe42222815e72490c79feeff05305530de393
   url_launcher_ios: 7a95fa5b60cc718a708b8f2966718e93db0cef1b
 
-PODFILE CHECKSUM: b8b4b218cd353632ad253a7672d3d0282992ed3a
+PODFILE CHECKSUM: e0ee87b6821e2c47f10ec993af34a9c000fe896e
 
 COCOAPODS: 1.16.2

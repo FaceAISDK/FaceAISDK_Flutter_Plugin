@@ -55,7 +55,7 @@ struct VerifyFaceView: View {
     private func localizedTip(for code: Int) -> String {
         let tipsString = FaceAILocalization.localizedTip(for: code, defaultPrefix: "VerifyFace")
         if code != 0 && code != 1 && code != 3 {
-           // TTSPlayer.shared.speak(tipsString)
+            TTSPlayer.shared.speak(tipsString)
         }
         return tipsString
     }

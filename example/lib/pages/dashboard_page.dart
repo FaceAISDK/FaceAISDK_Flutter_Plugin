@@ -191,13 +191,13 @@ class _SdkStatusBanner extends StatelessWidget {
           'Initializing SDK...',
         ),
       _SdkStatus.ready => (
-          AppColors.primary.withValues(alpha: 0.08),
+          AppColors.primary.withOpacity(0.08),
           AppColors.primary,
           Icons.check_circle_rounded,
           'SDK Ready',
         ),
       _SdkStatus.error => (
-          AppColors.error.withValues(alpha: 0.08),
+          AppColors.error.withOpacity(0.08),
           AppColors.error,
           Icons.error_outline_rounded,
           'SDK Init Failed',
@@ -258,7 +258,7 @@ class _SdkStatusBanner extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                 decoration: BoxDecoration(
-                  color: accent.withValues(alpha: 0.1),
+                  color: accent.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Text(

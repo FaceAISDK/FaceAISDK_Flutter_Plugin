@@ -115,7 +115,7 @@ class _VerifyPageState extends State<VerifyPage> {
                     subtitle,
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.white.withValues(alpha: 0.85),
+                      color: Colors.white.withOpacity(0.85),
                     ),
                   ),
                 ],
@@ -152,10 +152,10 @@ class _VerifyPageState extends State<VerifyPage> {
                 Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withValues(alpha: 0.06),
+                    color: AppColors.primary.withOpacity(0.06),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: AppColors.primary.withValues(alpha: 0.12),
+                      color: AppColors.primary.withOpacity(0.12),
                     ),
                   ),
                   child: Row(
@@ -163,7 +163,7 @@ class _VerifyPageState extends State<VerifyPage> {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: AppColors.primary.withValues(alpha: 0.1),
+                          color: AppColors.primary.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: const Icon(
@@ -243,7 +243,7 @@ class _VerifyPageState extends State<VerifyPage> {
                         Icon(
                           Icons.person_off_rounded,
                           size: 48,
-                          color: AppColors.outline.withValues(alpha: 0.5),
+                          color: AppColors.outline.withOpacity(0.5),
                         ),
                         const SizedBox(height: 12),
                         const Text(
@@ -370,7 +370,7 @@ class _FaceCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF191C1B).withValues(alpha: 0.05),
+            color: const Color(0xFF191C1B).withOpacity(0.05),
             blurRadius: 16,
             offset: const Offset(0, 4),
           ),
@@ -382,8 +382,8 @@ class _FaceCard extends StatelessWidget {
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(20),
-          splashColor: AppColors.primary.withValues(alpha: 0.08),
-          highlightColor: AppColors.primary.withValues(alpha: 0.04),
+          splashColor: AppColors.primary.withOpacity(0.08),
+          highlightColor: AppColors.primary.withOpacity(0.04),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Row(
@@ -393,12 +393,12 @@ class _FaceCard extends StatelessWidget {
                   width: 56,
                   height: 56,
                   decoration: BoxDecoration(
-                    color: hasImage ? null : color.withValues(alpha: 0.12),
+                    color: hasImage ? null : color.withOpacity(0.12),
                     borderRadius: BorderRadius.circular(16),
                     border: hasImage
                         ? null
                         : Border.all(
-                            color: color.withValues(alpha: 0.3),
+                            color: color.withOpacity(0.3),
                             width: 2,
                           ),
                   ),
@@ -491,7 +491,7 @@ class _FaceCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.primary.withValues(alpha: 0.25),
+                        color: AppColors.primary.withOpacity(0.25),
                         blurRadius: 8,
                         offset: const Offset(0, 3),
                       ),

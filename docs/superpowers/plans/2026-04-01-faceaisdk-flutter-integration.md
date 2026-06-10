@@ -36,7 +36,7 @@
 Replace the full contents of `android/build.gradle` with:
 
 ```gradle
-group = "com.faceAI.face_ai_sdk"
+group = "com.faceAI.sdk"
 version = "1.0-SNAPSHOT"
 
 buildscript {
@@ -66,7 +66,7 @@ apply plugin: "com.android.library"
 apply plugin: "kotlin-android"
 
 android {
-    namespace = "com.faceAI.face_ai_sdk"
+    namespace = "com.faceAI.sdk"
 
     compileSdk = 35
 
@@ -311,7 +311,7 @@ Replace `android/src/main/AndroidManifest.xml` with:
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.faceAI.face_ai_sdk">
+    package="com.faceAI.sdk">
 
     <queries>
         <intent>
@@ -362,7 +362,7 @@ git commit -m "feat: register FaceAISDK Activities in plugin manifest"
 Replace `android/src/main/kotlin/com/faceAI/face_ai_sdk/FaceAiSdkPlugin.kt` with:
 
 ```kotlin
-package com.faceAI.face_ai_sdk
+package com.faceAI.sdk
 
 import android.app.Activity
 import android.content.Intent

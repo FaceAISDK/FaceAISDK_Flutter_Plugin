@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.faceAI.face_ai_sdk">
+    package="com.faceAI.sdk">
 
     <queries>
         <intent>
@@ -15,19 +15,19 @@
         android:largeHeap="true"
         android:hardwareAccelerated="true">
         <activity
-            android:name="com.faceAI.face_ai_sdk.SysCamera.verify.FaceVerificationActivity"
+            android:name="com.faceAI.sdk.SysCamera.verify.FaceVerificationActivity"
             android:exported="false"
             android:launchMode="singleTop"
             android:theme="@style/Theme.FaceAISDK.Fullscreen" />
 
         <activity
-            android:name="com.faceAI.face_ai_sdk.SysCamera.verify.LivenessDetectActivity"
+            android:name="com.faceAI.sdk.SysCamera.verify.LivenessDetectActivity"
             android:exported="false"
             android:launchMode="singleTop"
             android:theme="@style/Theme.FaceAISDK.Fullscreen" />
 
         <activity
-            android:name="com.faceAI.face_ai_sdk.SysCamera.addFace.AddFaceFeatureActivity"
+            android:name="com.faceAI.sdk.SysCamera.addFace.AddFaceFeatureActivity"
             android:exported="false"
             android:theme="@style/FaceAITheme" />
     </application>

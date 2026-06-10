@@ -25,7 +25,7 @@ backtrace:
   #01 pc 0000000000007f40  libFaceAIModel.so (checkModel+52)
   #02 art_quick_generic_jni_trampoline
   ...
-  #17 com.faceAI.face_ai_sdk.SysCamera.addFace.AddFaceFeatureActivity.onCreate+0
+  #17 com.faceAI.sdk.SysCamera.addFace.AddFaceFeatureActivity.onCreate+0
 ```
 
 ## Register Dump (at crash)

@@ -387,8 +387,15 @@ public class FaceAiSdkPlugin: NSObject, FlutterPlugin {
         guard let jpegData = image.jpegData(compressionQuality: 0.9) else { return nil }
 
         if format == "filePath" {
-            let tempDir = NSTemporaryDirectory()
-            let filePath = (tempDir as NSString).appendingPathComponent("face_\(Int(Date().timeIntervalSince1970 * 1000)).jpg")
+            let fileManager = FileManager.default
+            guard let documentsDir = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else {
+                return nil
+            }
+            let facesDir = documentsDir.appendingPathComponent("face_images")
+            if !fileManager.fileExists(atPath: facesDir.path) {
+                try? fileManager.createDirectory(at: facesDir, withIntermediateDirectories: true)
+            }
+            let filePath = facesDir.appendingPathComponent("face_\(Int(Date().timeIntervalSince1970 * 1000)).jpg").path
             do {
                 try jpegData.write(to: URL(fileURLWithPath: filePath))
                 return filePath

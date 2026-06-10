@@ -75,7 +75,7 @@ class PerformanceCard extends StatelessWidget {
                     'ms',
                     style: TextStyle(
                       fontSize: 20,
-                      color: Colors.white.withValues(alpha: 0.8),
+                      color: Colors.white.withOpacity(0.8),
                     ),
                   ),
                 ],
@@ -86,7 +86,7 @@ class PerformanceCard extends StatelessWidget {
                   fontSize: 10,
                   fontWeight: FontWeight.w500,
                   letterSpacing: 1.5,
-                  color: Colors.white.withValues(alpha: 0.7),
+                  color: Colors.white.withOpacity(0.7),
                 ),
               ),
             ],

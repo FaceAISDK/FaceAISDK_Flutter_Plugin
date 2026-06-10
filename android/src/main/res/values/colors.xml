@@ -11,10 +11,10 @@
     <color name="green">#4CAF50</color>
     <color name="orange">#F05806</color>
     <color name="blue">#DD334141</color>
-    <color name="blue_sky">#AA0B4D46</color>
+    <color name="blue_sky">#AA095950</color>
     <color name="half_blue_sky">#160B4D46</color>
     <color name="helloColor">#6817023D</color>
     <color name="transparent">#00000000</color>
-
     <color name="black_overlay">#66000000</color>
+
 </resources>

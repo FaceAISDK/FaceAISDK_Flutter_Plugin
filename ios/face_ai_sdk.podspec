@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'face_ai_sdk'
-  s.version          = '0.0.1'
+  s.version          = '0.0.2'
   s.summary          = 'FaceAI SDK Flutter Plugin for iOS'
   s.description      = <<-DESC
 FaceAI SDK Flutter Plugin - Face verification, liveness detection, and face enrollment.
@@ -25,5 +25,5 @@ FaceAI SDK Flutter Plugin - Face verification, liveness detection, and face enro
   s.user_target_xcconfig = {
     'BUILD_LIBRARY_FOR_DISTRIBUTION' => 'NO'
   }
-  s.swift_version = '5.0'
+  s.swift_version = '5.9'
 end

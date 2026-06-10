@@ -1,16 +1,16 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
 
-    <style name="Theme.FaceAISDK.Fullscreen" parent="Theme.AppCompat.Light">
-        <item name="windowNoTitle">true</item>
+    <style name="Theme.FaceAISDK.Fullscreen" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowContentOverlay">@null</item>
-
+        <item name="android:windowLayoutInDisplayCutoutMode" tools:targetApi="p">shortEdges</item>
         <item name="buttonBarPositiveButtonStyle">@style/positiveBtnStyle</item>
         <item name="buttonBarNegativeButtonStyle">@style/negativeBtnStyle</item>
         <item name="android:windowActionBarOverlay">true</item>
-        <item name="android:windowBackground">@null</item>
+        <item name="android:windowBackground">@color/face_main_color</item>
     </style>
 
 
@@ -69,6 +69,14 @@
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:backgroundDimEnabled">true</item>
         <item name="android:backgroundDimAmount">0.6</item>
+    </style>
+
+    <style name="TransparentDialog" parent="Theme.AppCompat.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:backgroundDimEnabled">true</item>
     </style>
 
 

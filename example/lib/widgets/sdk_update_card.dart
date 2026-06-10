@@ -11,7 +11,7 @@ class SdkUpdateCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(28),
       decoration: BoxDecoration(
-        color: AppColors.surfaceContainerHighest.withValues(alpha: 0.3),
+        color: AppColors.surfaceContainerHighest.withOpacity(0.3),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
@@ -26,7 +26,7 @@ class SdkUpdateCard extends StatelessWidget {
             child: Icon(
               Icons.memory_rounded,
               size: 36,
-              color: AppColors.outline.withValues(alpha: 0.6),
+              color: AppColors.outline.withOpacity(0.6),
             ),
           ),
           const SizedBox(width: 24),
