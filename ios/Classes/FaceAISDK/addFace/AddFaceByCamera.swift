@@ -24,12 +24,8 @@ public struct AddFaceByCamera: View {
     // 根据状态码转换为对应的文字提示
     private func localizedTip(for code: Int) -> String {
         let key = "Face_Tips_Code_\(code)"
-        let defaultValue = "Add Face Tips Code=\(code)"
-        let tipsString = NSLocalizedString(key, value: defaultValue, comment: "")
-        if code != 0 && code != 1 && code != 11 {
-            TTSPlayer.shared.speak(tipsString)
-        }
-        return tipsString
+        let defaultValue = viewModel.sdkInterfaceTips.message
+        return NSLocalizedString(key, value: defaultValue, comment: "")
     }
     
     // 统一处理人脸录入成功的逻辑
@@ -126,7 +122,11 @@ public struct AddFaceByCamera: View {
                 viewModel.stopAddFace()
             }
             .onChange(of: viewModel.sdkInterfaceTips.code) { newValue in
-                print("🔔 AddFaceBySDKCamera： \(viewModel.sdkInterfaceTips.message)")
+                let tipsString = localizedTip(for: newValue)
+                print("🔔 AddFaceBySDKCamera： \(tipsString)")
+                if newValue != 0 && newValue != 1 && newValue != 11 {
+                    TTSPlayer.shared.speak(tipsString)
+                }
             }
             .onChange(of: viewModel.readyConfirmFace) { isReady in
                 if isReady && !needShowConfirmDialog {
@@ -139,7 +139,7 @@ public struct AddFaceByCamera: View {
 
 
 struct ConfirmAddFaceDialog: View {
-    let viewModel: AddFaceByCameraModel
+    @ObservedObject var viewModel: AddFaceByCameraModel
     let cameraSize: CGFloat
     let onConfirm: () -> Void
     
@@ -151,17 +151,24 @@ struct ConfirmAddFaceDialog: View {
                 .foregroundColor(Color.faceMain)
                 .padding(.top, 18)
             
-            //
-            Image(uiImage: viewModel.originFaceImage)
-                .resizable()
-                .scaledToFill()
-                .frame(width: 190, height: 220)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 12)
-                        .stroke(Color.gray.opacity(0.2), lineWidth: 1)
-                )
-                .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
+            // Safe Image Access
+            if let uiImage = viewModel.originFaceImage {
+                Image(uiImage: uiImage)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 190, height: 220)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Color.gray.opacity(0.2), lineWidth: 1)
+                    )
+                    .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
+            } else {
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color.gray.opacity(0.2))
+                    .frame(width: 190, height: 220)
+                    .overlay(Text("No Image").foregroundColor(.gray))
+            }
 
             Text(NSLocalizedString("Ensure face is clear", comment: ""))
                 .font(.system(size: 15))

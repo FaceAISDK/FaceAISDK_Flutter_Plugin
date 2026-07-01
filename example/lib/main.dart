@@ -1,42 +1,85 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:face_aisdk_flutter_plugin/face_aisdk_flutter_plugin.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
-  State<MyApp> createState() => _MyAppState();
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      // 1. 配置多语言支持
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('en', 'US'),
+        Locale('zh', 'CN'),
+      ],
+      home: const MyHomePage(),
+    );
+  }
 }
 
-class _MyAppState extends State<MyApp> {
-  String _resultDisplay = '等待操作...';
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key});
+
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  String _resultDisplay = '';
   final String _testFaceId = "yourFaceID";
+
+  // 简单的多语言映射
+  String t(String key) {
+    bool isZh = Localizations.localeOf(context).languageCode == 'zh';
+    Map<String, Map<String, String>> localizedValues = {
+      'title': {'en': 'FaceAISDK Demo', 'zh': 'FaceAISDK人脸识别演示'},
+      'waiting': {'en': 'Waiting for operation...', 'zh': '等待操作...'},
+      'result_empty': {'en': 'Result is empty', 'zh': '结果为空'},
+      'btn_add_camera': {'en': 'Register Face via SDK Camera', 'zh': 'SDK相机录入人脸信息'},
+      'btn_verify': {'en': 'Face Verify + Liveness', 'zh': '人脸识别+活体检测'},
+      'btn_liveness': {'en': 'Liveness Detection Only', 'zh': '检测人脸是否活体'},
+      'btn_query': {'en': 'Query Face Feature', 'zh': '查询人脸特征信息'},
+      'btn_insert': {'en': 'Sync/Insert Face Feature', 'zh': '同步人脸特征信息'},
+      'btn_add_image': {'en': 'Register Face via Image', 'zh': '人脸图录入人脸信息'},
+      'btn_delete': {'en': 'Delete Face Feature', 'zh': '删除人脸特征信息'},
+      'delete_done': {'en': 'Delete Completed', 'zh': '删除完成'},
+    };
+    return localizedValues[key]?[isZh ? 'zh' : 'en'] ?? key;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_resultDisplay.isEmpty) {
+      _resultDisplay = t('waiting');
+    }
+  }
 
   void _updateDisplay(Map? result, {String? method}) {
     if (result == null) {
-      setState(() => _resultDisplay = "结果为空");
+      setState(() => _resultDisplay = t('result_empty'));
       return;
     }
 
-    // 模拟 UTS 版本的显示逻辑
-    if (method == 'faceVerify') {
+    if (method == 'faceVerify' || method == 'livenessVerify') {
        _resultDisplay = "code: ${result['code']}\n"
                         "msg: ${result['message'] ?? result['msg']}\n"
-                        "similarity: ${result['similarity']}\n"
-                        "liveness: ${result['livenessValue']}\n"
-                        "faceBase64: ${_truncate(result['faceBase64'])}";
-    } else if (method == 'livenessVerify') {
-       _resultDisplay = "code: ${result['code']}\n"
-                        "msg: ${result['message'] ?? result['msg']}\n"
+                        "${result.containsKey('similarity') ? 'similarity: ${result['similarity']}\n' : ''}"
                         "liveness: ${result['livenessValue']}\n"
                         "faceBase64: ${_truncate(result['faceBase64'])}";
     } else {
-      // 通用显示
       Map<String, dynamic> displayMap = Map<String, dynamic>.from(result);
       displayMap.forEach((key, value) {
         if ((key == 'faceBase64' || key == 'faceFeature') && value is String && value.length > 50) {
@@ -45,7 +88,6 @@ class _MyAppState extends State<MyApp> {
       });
       _resultDisplay = const JsonEncoder.withIndent('  ').convert(displayMap);
     }
-    
     setState(() {});
   }
 
@@ -56,108 +98,96 @@ class _MyAppState extends State<MyApp> {
     return value?.toString() ?? "null";
   }
 
-  // 1. SDK 相机录入
-  Future<void> _addFaceByCamera() async {
-    final result = await FaceAiSdkFlutterPlugin.addFaceBySDKCamera(
-      faceId: _testFaceId,
-      addFacePerformanceMode: 1, // 1: 快速模式
-      needShowConfirmDialog: true,
-    );
-    _updateDisplay(result);
-  }
-
-  // 2. 人脸识别 + 活体检测
-  Future<void> _faceVerify() async {
-    final result = await FaceAiSdkFlutterPlugin.faceVerify(
-      faceId: _testFaceId,
-      threshold: 0.84,
-      livenessType: 1, // 1: 动作活体
-      motionLivenessTypes: "1,2,3,4,5",
-      motionLivenessTimeOut: 7,
-      motionLivenessSteps: 2,
-    );
-    _updateDisplay(result, method: 'faceVerify');
-  }
-
-  // 3. 检测人脸是否活体
-  Future<void> _livenessVerify() async {
-    final result = await FaceAiSdkFlutterPlugin.livenessVerify(
-      livenessType: 2, // 2: 动作+炫彩活体
-      motionLivenessTypes: "1,2,3,4,5",
-      motionLivenessTimeOut: 7,
-      motionLivenessSteps: 2,
-      showResultTips: true,
-    );
-    _updateDisplay(result, method: 'livenessVerify');
-  }
-
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(
-          backgroundColor: const Color(0xFF1B4332),
-          title: const Text('FaceAISDK人脸识别演示', style: TextStyle(color: Colors.white, fontSize: 18)),
-          centerTitle: true,
-        ),
-        body: Column(
-          children: [
-            Expanded(
-              child: ListView(
-                children: [
-                  _buildMenuButton('SDK相机录入人脸信息', _addFaceByCamera),
-                  _buildMenuButton('人脸识别+活体检测', _faceVerify),
-                  _buildMenuButton('检测人脸是否活体', _livenessVerify),
-                  _buildMenuButton('查询人脸特征信息', () async {
-                    final res = await FaceAiSdkFlutterPlugin.getFaceFeature(_testFaceId);
-                    _updateDisplay(res);
-                  }),
-                  _buildMenuButton('同步人脸特征信息', () async {
-                    final res = await FaceAiSdkFlutterPlugin.insertFaceFeature(faceId: _testFaceId, feature: "...");
-                    _updateDisplay(res);
-                  }),
-                  _buildMenuButton('人脸图录入人脸信息', () async {
-                    final res = await FaceAiSdkFlutterPlugin.addFaceBySDKImage(faceId: _testFaceId, imageBase64: "...");
-                    _updateDisplay(res);
-                  }),
-                  _buildMenuButton('删除人脸特征信息', () async {
-                    await FaceAiSdkFlutterPlugin.deleteFaceFeature(_testFaceId);
-                    setState(() => _resultDisplay = "删除完成");
-                  }),
-                ],
-              ),
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF1B4332),
+        title: Text(t('title'), style: const TextStyle(color: Colors.white, fontSize: 18)),
+        centerTitle: true,
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: ListView(
+              children: [
+                _buildMenuButton(t('btn_add_camera'), () async {
+                  final result = await FaceAiSdkFlutterPlugin.addFaceBySDKCamera(
+                    faceId: _testFaceId,
+                    addFacePerformanceMode: 1,
+                    needShowConfirmDialog: true,
+                  );
+                  _updateDisplay(result);
+                }),
+                _buildMenuButton(t('btn_verify'), () async {
+                  final result = await FaceAiSdkFlutterPlugin.faceVerify(
+                    faceId: _testFaceId,
+                    threshold: 0.84,
+                    livenessType: 1,
+                    motionLivenessTypes: "1,2,3,4,5",
+                    motionLivenessTimeOut: 7,
+                    motionLivenessSteps: 2,
+                  );
+                  _updateDisplay(result, method: 'faceVerify');
+                }),
+                _buildMenuButton(t('btn_liveness'), () async {
+                  final result = await FaceAiSdkFlutterPlugin.livenessVerify(
+                    livenessType: 2,
+                    motionLivenessTypes: "1,2,3,4,5",
+                    motionLivenessTimeOut: 7,
+                    motionLivenessSteps: 2,
+                    showResultTips: true,
+                  );
+                  _updateDisplay(result, method: 'livenessVerify');
+                }),
+                _buildMenuButton(t('btn_query'), () async {
+                  final res = await FaceAiSdkFlutterPlugin.getFaceFeature(_testFaceId);
+                  _updateDisplay(res);
+                }),
+                _buildMenuButton(t('btn_insert'), () async {
+                  final res = await FaceAiSdkFlutterPlugin.insertFaceFeature(faceId: _testFaceId, feature: "...");
+                  _updateDisplay(res);
+                }),
+                _buildMenuButton(t('btn_add_image'), () async {
+                  final res = await FaceAiSdkFlutterPlugin.addFaceBySDKImage(faceId: _testFaceId, imageBase64: "...");
+                  _updateDisplay(res);
+                }),
+                _buildMenuButton(t('btn_delete'), () async {
+                  await FaceAiSdkFlutterPlugin.deleteFaceFeature(_testFaceId);
+                  setState(() => _resultDisplay = t('delete_done'));
+                }),
+              ],
             ),
-            
-            // 结果展示区域
-            Container(
-              height: 200,
-              width: double.infinity,
-              margin: const EdgeInsets.all(12),
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: const Color(0xFFF8F0FF),
-                border: Border.all(color: Colors.purple, width: 1.5),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: SingleChildScrollView(
-                      child: Text(
-                        _resultDisplay,
-                        style: const TextStyle(color: Colors.purple, fontSize: 14, height: 1.5, fontFamily: 'monospace'),
-                      ),
+          ),
+          
+          // 结果展示区域
+          Container(
+            height: 200,
+            width: double.infinity,
+            margin: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF8F0FF),
+              border: Border.all(color: Colors.purple, width: 1.5),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Text(
+                      _resultDisplay,
+                      style: const TextStyle(color: Colors.purple, fontSize: 14, height: 1.5, fontFamily: 'monospace'),
                     ),
                   ),
-                  const Divider(color: Colors.purple),
-                  const Text('Email: FaceAISDK.Service@gmail.com', style: TextStyle(color: Colors.black54, fontSize: 12)),
-                ],
-              ),
+                ),
+                const Divider(color: Colors.purple),
+                const Text('Email: FaceAISDK.Service@gmail.com', style: TextStyle(color: Colors.black54, fontSize: 12)),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
