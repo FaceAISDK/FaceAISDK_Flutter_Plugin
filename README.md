@@ -165,7 +165,7 @@ if (result?['code'] == FaceAiSdkResultCode.verifySuccess) {
 #### 人脸采集注册 (通过相机)
 ```dart
 final result = await FaceAiSdkFlutterPlugin.addFaceBySDKCamera(
-  faceId: "new_user_456",
+  faceId: "user_123",
   addFacePerformanceMode: 1, // 1: 快速模式, 2: 精确模式
 );
 ```
@@ -174,7 +174,7 @@ final result = await FaceAiSdkFlutterPlugin.addFaceBySDKCamera(
 ```dart
 final result = await FaceAiSdkFlutterPlugin.livenessVerify(
   livenessType: 2,              // 1: 动作, 2: 动作+炫彩, 3: 炫彩, 4: 静默
-  motionLivenessTypes: "1,2,3",  // 1: 张嘴, 2: 微笑, 3: 眨眼, 4: 摇头, 5: 点头
+  motionLivenessTypes: "1,2,3", // 1: 张嘴, 2: 微笑, 3: 眨眼, 4: 摇头, 5: 点头
   motionLivenessTimeOut: 7,     // 超时时间 [3, 10]
   motionLivenessSteps: 2,       // 动作步数 [1, 2]
   allowMultiFaces: true,        // 是否允许多人脸 (仅 Android)
