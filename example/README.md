@@ -1,6 +1,6 @@
-# face_ai_sdk_example
+# face_aisdk_flutter_plugin_example
 
-Demonstrates how to use the face_ai_sdk plugin.
+A new Flutter project.
 
 ## Getting Started
 
