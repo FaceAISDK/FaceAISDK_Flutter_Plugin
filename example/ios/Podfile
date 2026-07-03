@@ -32,7 +32,6 @@ target 'Runner' do
   use_modular_headers!
 
   pod 'FaceAISDK_Core', :git => 'https://github.com/FaceAISDK/FaceAISDK_Core.git', :tag => '2026.07.01'
-  pod 'TensorFlowLiteSwift'
 
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
   target 'RunnerTests' do
