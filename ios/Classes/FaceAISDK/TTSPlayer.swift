@@ -5,9 +5,7 @@ import os.log
 import UIKit
 #endif
 
-// MARK: - TTSPlayer
-
-/// iOS 原生语音播报管理器（兼容 iOS 15 ~ 26）
+// MARK: - TTSPlayer 20260703
 final class TTSPlayer: NSObject {
 
     static let shared = TTSPlayer()
@@ -100,7 +98,7 @@ final class TTSPlayer: NSObject {
     /// 播报文本
     func speak(_ text: String?,
                language: String? = nil,
-               rate: Float = 0.55,
+               rate: Float = 0.50,
                pitch: Float = 0.98,
                policy: Policy = .dropIfBusy) {
         let originalText = text ?? ""

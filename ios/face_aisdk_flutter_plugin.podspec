@@ -17,12 +17,12 @@ A Flutter plugin for FaceAISDK offline face recognition.
   # }
 
   # 修改后：直接将资源拷贝到主工程 Bundle
-  s.resources = ['Resources/**/*.lproj']
+  s.resources = ['Resources/*.xcstrings']
 
 
   s.vendored_frameworks = 'Frameworks/*.framework'
   s.dependency 'Flutter'
-  s.dependency 'FaceAISDK_Core', '2026.06.29'
+  s.dependency 'FaceAISDK_Core', '2026.07.01'
   s.dependency 'TensorFlowLiteSwift'
   s.platform = :ios, '15.5'
 
