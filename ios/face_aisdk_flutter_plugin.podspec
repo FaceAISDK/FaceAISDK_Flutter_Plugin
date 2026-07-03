@@ -1,0 +1,35 @@
+Pod::Spec.new do |s|
+  s.name             = 'face_aisdk_flutter_plugin'
+  s.version          = '0.0.1'
+  s.summary          = 'A Flutter plugin for FaceAISDK offline face recognition.'
+  s.description      = <<-DESC
+A Flutter plugin for FaceAISDK offline face recognition.
+                       DESC
+  s.homepage         = 'https://github.com/FaceAISDK/FaceAISDK_Flutter_Plugin'
+  s.license          = { :file => '../LICENSE' }
+  s.author           = { 'FaceAISDK' => 'FaceAISDK.Service@gmail.com' }
+  s.source           = { :path => '.' }
+  s.source_files = 'Classes/**/*'
+
+  # 修改前
+  # s.resource_bundles = {
+  #   'face_aisdk_flutter_plugin' => ['Resources/**/*']
+  # }
+
+  # 修改后：直接将资源拷贝到主工程 Bundle
+  s.resources = ['Resources/*.xcstrings']
+
+
+  s.vendored_frameworks = 'Frameworks/*.framework'
+  s.dependency 'Flutter'
+  s.dependency 'FaceAISDK_Core', '2026.07.01'
+  s.dependency 'TensorFlowLiteSwift'
+  s.platform = :ios, '15.5'
+
+  # Flutter.framework does not contain a i386 slice.
+  s.pod_target_xcconfig = {
+    'DEFINES_MODULE' => 'YES',
+    'BUILD_LIBRARY_FOR_DISTRIBUTION' => 'NO'
+  }
+  s.swift_version = '5.9'
+end

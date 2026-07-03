@@ -1,13 +1,12 @@
 plugins {
     id("com.android.application")
     id("kotlin-android")
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
 
 android {
-    namespace = "com.faceAI.face_ai_sdk_example"
-    compileSdk = flutter.compileSdkVersion
+    namespace = "com.example.face_aisdk_flutter_plugin_example"
+    compileSdk = 34
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -20,34 +19,34 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.face.flutter"
-        minSdk = 24
-        targetSdk = 35
+        applicationId = "com.example.face_aisdk_flutter_plugin_example"
+        minSdk = flutter.minSdkVersion
+        targetSdk = 34
         versionCode = flutter.versionCode
         versionName = flutter.versionName
-
-        ndk {
-            abiFilters += listOf("armeabi-v7a", "arm64-v8a")
-        }
-    }
-
-    signingConfigs {
-        create("faceai") {
-            storeFile = file("FaceAIPublic")
-            storePassword = "FaceAIPublic"
-            keyAlias = "FaceAIPublic"
-            keyPassword = "FaceAIPublic"
-        }
+        multiDexEnabled = true
     }
 
     buildTypes {
-        debug {
-            signingConfig = signingConfigs.getByName("faceai")
-        }
         release {
-            signingConfig = signingConfigs.getByName("faceai")
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
+}
+
+dependencies {
+    implementation(files("../../../android/libs/FaceSDKLib-release.aar"))
+    implementation("io.github.faceaisdk:Android:2026.06.25")
+    implementation("io.github.cymchad:BaseRecyclerViewAdapterHelper4:4.1.1")
+    implementation("com.tencent:mmkv:1.3.14")
+    implementation("com.airbnb.android:lottie:6.5.2")
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+    implementation("androidx.core:core:1.10.1")
+    implementation("androidx.recyclerview:recyclerview:1.3.2")
+    implementation("androidx.appcompat:appcompat:1.6.0")
+    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation("pub.devrel:easypermissions:3.0.0")
+    implementation("androidx.multidex:multidex:2.0.1")
 }
 
 flutter {

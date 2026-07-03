@@ -1,268 +1,191 @@
-# FaceAI SDK Flutter Plugin
+# face_aisdk_flutter_plugin
 
-A Flutter plugin for FaceAISDK — on-device face verification, liveness detection, and face enrollment for Android and iOS.
+[English](#english) | [简体中文](#chinese)
 
-**[Bahasa Indonesia](README_ID.md)**
+<a name="english"></a>
+A Flutter plugin for FaceAISDK offline face recognition. Supports Platform View (Built-in UI mode) and direct API calls.
 
 ## Features
 
-- **Face Enrollment** — Register a face for 1:1 verification
-- **Face Verification (1:1)** — Verify a live face against a stored face
-- **Liveness Detection** — Anti-spoofing detection (motion, color flash, silent)
-- **Add Face** — Add a face to the search database
+- **Offline Face Recognition**: High-performance offline face identification and verification.
+- **Liveness Detection**: Supports Action, Silent, and Color Flash liveness detection.
+- **1:1 Face Verification**: Compare two faces for similarity.
+- **Platform View Support**: Seamlessly integrate the camera preview and UI into your Flutter widget tree.
+- **Face Management**: Register, delete, and check for face features locally.
 
-All processing is on-device. No internet required.
+## Getting Started
 
-## Requirements
+### Android
+1. Add the following to your `AndroidManifest.xml`:
+   ```xml
+   <uses-permission android:name="android.permission.CAMERA" />
+   ```
+2. Ensure `minSdkVersion` is at least **21**.
 
-| Platform | Requirement |
-|----------|-------------|
-| Android | `minSdk >= 24`, `armeabi-v7a` or `arm64-v8a` device |
-| iOS | iOS 15.5+, physical device only (no simulator) |
-| Both | Camera permission |
-
-## Android Setup (Required)
-
-### 1. AndroidManifest.xml
-
-Add `extractNativeLibs="true"` to your `<application>` tag:
-
-```xml
-<application
-    android:extractNativeLibs="true"
-    ...>
-```
-
-### 2. build.gradle.kts
-
-Add these configurations to `android/app/build.gradle.kts`:
-
-```kotlin
-android {
-    // Java 17 / 11 required
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-    kotlinOptions {
-        jvmTarget = "17"
-    }
-
-    // Sign with FaceAISDK-registered keystore
-    signingConfigs {
-        create("faceai") {
-            storeFile = file("your-keystore-file")
-            storePassword = "your-password"
-            keyAlias = "your-alias"
-            keyPassword = "your-password"
-        }
-    }
-    buildTypes {
-        debug {
-            signingConfig = signingConfigs.getByName("faceai")
-        }
-        release {
-            signingConfig = signingConfigs.getByName("faceai")
-        }
-    }
-}
-```
-
-
-## iOS Setup (Required)
-
-### 1. Podfile
-
-Set the platform to iOS 15.5+ and add the `FaceAISDK_Core` pod in your `ios/Podfile`:
-
-```ruby
-platform :ios, '15.5'
-
-target 'Runner' do
-  use_frameworks!
-
-  flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
-
-  pod 'FaceAISDK_Core', :git => 'https://github.com/FaceAISDK/FaceAISDK_Core.git', :tag => '2026.04.27'
-end
-```
-
-Add this `post_install` block to fix `BUILD_LIBRARY_FOR_DISTRIBUTION` ABI mismatch:
-
-```ruby
-post_install do |installer|
-  installer.pods_project.targets.each do |target|
-    flutter_additional_ios_build_settings(target)
-
-    target.build_configurations.each do |config|
-      config.build_settings['BUILD_LIBRARY_FOR_DISTRIBUTION'] = 'YES'
-      config.build_settings['OTHER_SWIFT_FLAGS'] ||= '$(inherited)'
-      config.build_settings['OTHER_SWIFT_FLAGS'] += ' -Xfrontend -enable-library-evolution'
-    end
-  end
-end
-```
-
-Then run:
-
-```bash
-cd ios && pod install
-```
-
-### 2. Info.plist
-
-Add camera permission to `ios/Runner/Info.plist`:
-
-```xml
-<key>NSCameraUsageDescription</key>
-<string>Camera access is required for face verification and liveness detection.</string>
-```
-
-### 3. Build Settings
-
-The plugin requires a **physical device** — simulator builds are not supported (`EXCLUDED_ARCHS[sdk=iphonesimulator*]` excludes `i386` and `arm64`).
+### iOS
+1. Add the following to your `Info.plist`:
+   ```xml
+   <key>NSCameraUsageDescription</key>
+   <string>We need camera access for face recognition.</string>
+   ```
+2. Ensure the deployment target is **iOS 15.0** or higher.
 
 ## Usage
 
-### Initialize SDK
-
-Must be called before any other method:
+### 1. Platform View (Built-in UI)
+Use `FaceAiSdkView` to show a camera preview with built-in face recognition UI.
 
 ```dart
-final faceAiSdk = FaceAiSdk();
-await faceAiSdk.initializeSDK({
-  'locale': 'en',  // iOS only: UI language — "en" (default), "id", "zh-Hans"
-});
+import 'package:face_aisdk_flutter_plugin/face_aisdk_flutter_plugin.dart';
+
+FaceAiSdkView(
+  onViewCreated: (FaceAiSdkController controller) {
+    // You can use the controller to start or stop scanning
+    // controller.startScan();
+  },
+  creationParams: {
+    'threshold': 0.84,
+  },
+)
 ```
 
-### Enroll a Face
+### 2. Direct API Calls
+The `FaceAiSdkFlutterPlugin` class provides several static methods for face operations.
 
-Capture and register a face for 1:1 verification:
-
+#### Face Verification (1:1 + Liveness)
 ```dart
-final result = await faceAiSdk.startEnroll(
+final result = await FaceAiSdkFlutterPlugin.faceVerify(
   faceId: "user_123",
-  format: "base64",  // or "filePath"
+  threshold: 0.84,
+  livenessType: 1, // 1: Action, 2: Action+Color, 3: Color, 4: Silent
+  motionLivenessTypes: "1,2,3", // 1: Mouth, 2: Smile, 3: Blink, 4: Shake, 5: Nod
 );
 
-if (result['code'] == 1) {
-  print('Enrolled: ${result['faceID']}');
+if (result?['code'] == FaceAiSdkResultCode.verifySuccess) {
+  print("Face verified successfully");
 }
 ```
 
-### Verify a Face (1:1)
+#### Face Registration (via Camera)
+```dart
+final result = await FaceAiSdkFlutterPlugin.addFaceBySDKCamera(
+  faceId: "new_user_456",
+  addFacePerformanceMode: 1, // 1: Fast, 2: Precise
+);
+```
 
-Compare a live face against a stored face:
+#### Liveness Detection
+```dart
+final result = await FaceAiSdkFlutterPlugin.livenessVerify(
+  livenessType: 2,             // 1: Action, 2: Action+Color, 3: Color, 4: Silent
+  motionLivenessTypes: "1,2,3", // 1: Mouth, 2: Smile, 3: Blink, 4: Shake, 5: Nod
+  motionLivenessTimeOut: 7,    // Timeout in seconds [3, 10]
+  motionLivenessSteps: 2,      // Actions required [1, 2]
+  allowMultiFaces: true,       // Allow multiple faces (Android only)
+  showResultTips: true,        // Show result toast/tips
+);
+```
+
+### 3. Result Codes
+Use `FaceAiSdkResultCode` to handle different outcomes:
+- `verifySuccess` (1): Verification passed.
+- `verifyFailed` (2): Verification failed.
+- `motionLivenessSuccess` (3): Action liveness passed.
+- `allLivenessSuccess` (10): All liveness checks passed.
+- `cancel` (0): User cancelled.
+
+---
+
+<a name="chinese"></a>
+# face_aisdk_flutter_plugin (简体中文)
+
+适用于 FaceAISDK 离线人脸识别的 Flutter 插件。支持 Platform View（内置 UI 模式）和直接 API 调用。
+
+## 特性
+
+- **离线人脸识别**: 高性能离线人脸比对与识别。
+- **活体检测**: 支持动作活体、静默活体及炫彩活体检测。
+- **1:1 人脸比对**: 比较两张人脸的相似度。
+- **支持 Platform View**: 将相机预览和 UI 无缝集成到 Flutter 组件树中。
+- **人脸管理**: 本地注册、删除和检查人脸特征值。
+
+## 入门指南
+
+### Android
+1. 在 `AndroidManifest.xml` 中添加：
+   ```xml
+   <uses-permission android:name="android.permission.CAMERA" />
+   ```
+2. 确保 `minSdkVersion` 至少为 **21**。
+
+### iOS
+1. 在 `Info.plist` 中添加：
+   ```xml
+   <key>NSCameraUsageDescription</key>
+   <string>我们需要相机权限来进行人脸识别。</string>
+   ```
+2. 确保 Deployment Target 至少为 **iOS 15.0**。
+
+## 使用示例
+
+### 1. Platform View (内置 UI 模式)
+使用 `FaceAiSdkView` 组件在 Flutter 中嵌入带有引导 UI 的相机界面。
 
 ```dart
-final result = await faceAiSdk.startVerification(
-  faceId: "user_123",        // face ID for stored lookup (faceId or faceFeature required)
-  faceFeature: null,          // or pass face feature string directly
-  threshold: 0.85,            // 0.8 - 0.95
-  livenessType: 1,            // 0=NONE, 1=MOTION, 2=MOTION+COLOR, 3=COLOR, 4=SILENT
-  motionStepSize: 1,          // 1-2 steps
-  motionTimeout: 10,          // 3-22 seconds
-  motionTypes: "1,2,3",       // 1=mouth, 2=smile, 3=blink, 4=shake, 5=nod
-  allowRetry: true,           // allow retry on timeout/failure
-  format: "base64",           // "base64" or "filePath"
-);
+import 'package:face_aisdk_flutter_plugin/face_aisdk_flutter_plugin.dart';
 
-if (result['code'] == 1) {
-  print('Match! Similarity: ${result['similarity']}');
-  print('Liveness: ${result['livenessValue']}');
-}
+FaceAiSdkView(
+  onViewCreated: (FaceAiSdkController controller) {
+    // 可以通过控制器手动开始或停止扫描
+    // controller.startScan();
+  },
+  creationParams: {
+    'threshold': 0.84,
+  },
+)
 ```
 
-### Liveness Detection
+### 2. API 调用模式
+通过 `FaceAiSdkFlutterPlugin` 类直接调用功能接口。
 
-Detect if the face is a real person (no face matching):
-
+#### 人脸核验 (1:1 + 活体检测)
 ```dart
-final result = await faceAiSdk.startLiveness(
-  livenessType: 1,          // 1=MOTION, 2=MOTION+COLOR, 3=COLOR, 4=SILENT
-  motionStepSize: 2,
-  motionTimeout: 10,
-  motionTypes: "1,2,3",
-  format: "base64",
+final result = await FaceAiSdkFlutterPlugin.faceVerify(
+  faceId: "user_123",
+  threshold: 0.84,
+  livenessType: 1, // 1: 动作, 2: 动作+炫彩, 3: 炫彩, 4: 静默
+  motionLivenessTypes: "1,2,3", // 1: 张嘴, 2: 微笑, 3: 眨眼, 4: 摇头, 5: 点头
 );
 
-if (result['code'] == 10) {
-  print('Liveness score: ${result['livenessValue']}');
+if (result?['code'] == FaceAiSdkResultCode.verifySuccess) {
+  print("人脸核验成功");
 }
 ```
 
-### Add Face to Search Database
-
-Add a face for 1:N search:
-
+#### 人脸采集注册 (通过相机)
 ```dart
-final result = await faceAiSdk.addFace(
-  faceId: "user_456",
-  format: "base64",
+final result = await FaceAiSdkFlutterPlugin.addFaceBySDKCamera(
+  faceId: "user_123",
+  addFacePerformanceMode: 1, // 1: 快速模式, 2: 精确模式
 );
-
-if (result['code'] == 1) {
-  print('Face added: ${result['faceID']}');
-}
 ```
 
-## Result Codes
+#### 纯活体检测
+```dart
+final result = await FaceAiSdkFlutterPlugin.livenessVerify(
+  livenessType: 2,              // 1: 动作, 2: 动作+炫彩, 3: 炫彩, 4: 静默
+  motionLivenessTypes: "1,2,3", // 1: 张嘴, 2: 微笑, 3: 眨眼, 4: 摇头, 5: 点头
+  motionLivenessTimeOut: 7,     // 超时时间 [3, 10]
+  motionLivenessSteps: 2,       // 动作步数 [1, 2]
+  allowMultiFaces: true,        // 是否允许多人脸 (仅 Android)
+  showResultTips: true,         // 是否显示结果提示
+);
+```
 
-| Code | Meaning                               |
-|------|---------------------------------------|
-| 0    | Cancelled by user                     |
-| 1    | Success                               |
-| 2    | Verification failed (not same person) |
-| 3    | Timeout                               |
-| 4    | Timeout (exceeded retry limit)        |
-| 5    | No face detected repeatedly           |
-| 10   | Liveness detection completed          |
-| 11   | Silent liveness failed                |
-| 12   | No Face Feature exist                 |
-
-
-## Liveness Types
-
-| Value | Type | Description |
-|-------|------|-------------|
-| 0 | NONE | No liveness detection |
-| 1 | MOTION | Motion-based (open mouth, smile, blink, etc.) |
-| 2 | MOTION + COLOR | Motion + color flash combined |
-| 3 | COLOR_FLASH | Color flash only (not for bright environments) |
-| 4 | SILENT | Passive silent liveness |
-
-## Motion Types
-
-Comma-separated string of motion IDs:
-
-| ID | Motion |
-|----|--------|
-| 1 | Open mouth |
-| 2 | Smile |
-| 3 | Blink |
-| 4 | Shake head |
-| 5 | Nod head |
-
-## Troubleshooting
-
-
-### Camera not working
-
-Ensure camera permission is granted at runtime. The plugin declares `<uses-permission android:name="android.permission.CAMERA" />` automatically on Android. On iOS, add `NSCameraUsageDescription` to `Info.plist`.
-
-### iOS: `BUILD_LIBRARY_FOR_DISTRIBUTION` / ABI mismatch errors
-
-`FaceAISDK_Core` is a pre-compiled binary. All pods must use a consistent `BUILD_LIBRARY_FOR_DISTRIBUTION` setting. Add the `post_install` block from the iOS Setup section to your Podfile.
-
-### iOS: `No such module 'FaceAISDK_Core'`
-
-Make sure you added the `FaceAISDK_Core` pod to your Podfile and ran `pod install`. The module is not available on CocoaPods trunk — it must be referenced via the Git URL.
-
-## License
-
-**See [LICENSE](LICENSE) for details.**
-
-## Credits
-
-- [FaceAISDK Android](https://github.com/FaceAISDK/FaceAISDK_Android) — Core face AI engine (Android)
-- [FaceAISDK_Core](https://github.com/FaceAISDK/FaceAISDK_Core) — Core face AI engine (iOS)
+### 3. 结果状态码
+使用 `FaceAiSdkResultCode` 处理不同的返回结果：
+- `verifySuccess` (1): 核验成功。
+- `verifyFailed` (2): 核验失败。
+- `motionLivenessSuccess` (3): 动作活体通过。
+- `allLivenessSuccess` (10): 所有活体检测通过。
+- `cancel` (0): 用户取消操作。
