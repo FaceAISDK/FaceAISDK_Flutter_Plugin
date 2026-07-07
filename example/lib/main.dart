@@ -67,26 +67,18 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  void _updateDisplay(Map? result, {String? method}) {
-    if (result == null) {
-      setState(() => _resultDisplay = t('result_empty'));
-      return;
-    }
-
+  void _updateDisplay(FaceAiSdkResult result, {String? method}) {
     if (method == 'faceVerify' || method == 'livenessVerify') {
-       _resultDisplay = "code: ${result['code']}\n"
-                        "msg: ${result['message'] ?? result['msg']}\n"
-                        "${result.containsKey('similarity') ? 'similarity: ${result['similarity']}\n' : ''}"
-                        "liveness: ${result['livenessValue']}\n"
-                        "faceBase64: ${_truncate(result['faceBase64'])}";
+       _resultDisplay = "code: ${result.code}\n"
+                        "msg: ${result.message}\n"
+                        "${result.similarity != null ? 'similarity: ${result.similarity}\n' : ''}"
+                        "liveness: ${result.livenessValue}\n"
+                        "faceBase64: ${_truncate(result.faceBase64)}";
     } else {
-      Map<String, dynamic> displayMap = Map<String, dynamic>.from(result);
-      displayMap.forEach((key, value) {
-        if ((key == 'faceBase64' || key == 'faceFeature') && value is String && value.length > 50) {
-          displayMap[key] = "${value.substring(0, 20)}...${value.substring(value.length - 20)}";
-        }
-      });
-      _resultDisplay = const JsonEncoder.withIndent('  ').convert(displayMap);
+       _resultDisplay = "code: ${result.code}\n"
+                        "msg: ${result.message}\n"
+                        "feature: ${_truncate(result.faceFeature)}\n"
+                        "faceBase64: ${_truncate(result.faceBase64)}";
     }
     setState(() {});
   }
@@ -136,6 +128,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     motionLivenessTypes: "1,2,3,4,5",
                     motionLivenessTimeOut: 7,
                     motionLivenessSteps: 2,
+                    showResultTips: true,
                   );
                   _updateDisplay(result, method: 'livenessVerify');
                 }),
