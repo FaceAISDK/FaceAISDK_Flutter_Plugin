@@ -26,9 +26,9 @@ public struct AddFaceByCamera: View {
         let key = "Face_Tips_Code_\(code)"
         let defaultValue = "Add Face Tips Code=\(code)"
         let tipsString = NSLocalizedString(key, value: defaultValue, comment: "")
-        if code != 0 && code != 1 && code != 11 {
-            TTSPlayer.shared.speak(tipsString)
-        }
+//         if code != 0 && code != 1 && code != 11 {
+//             TTSPlayer.shared.speak(tipsString)
+//         }
         return tipsString
     }
     
