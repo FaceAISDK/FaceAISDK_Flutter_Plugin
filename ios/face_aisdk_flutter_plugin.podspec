@@ -16,8 +16,9 @@ A Flutter plugin for FaceAISDK offline face recognition.
   #   'face_aisdk_flutter_plugin' => ['Resources/**/*']
   # }
 
-  # 修改后：直接将资源拷贝到主工程 Bundle
-  s.resources = ['Resources/*.xcstrings']
+  # Keep resources in the app main bundle so NSLocalizedString(...) can resolve
+  # Localizable.strings without changing Swift code under Classes/FaceAISDK.
+  s.resources = ['Resources/*.lproj']
 
 
   s.vendored_frameworks = 'Frameworks/*.framework'

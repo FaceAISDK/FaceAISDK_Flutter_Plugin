@@ -173,7 +173,7 @@ class FaceAiSdkPlugin: FlutterPlugin, MethodChannel.MethodCallHandler, ActivityA
         var faceFeature = data?.getStringExtra("faceFeature") ?: ""
         var similarity = data?.getFloatExtra("similarity", 0f) ?: 0f
         var livenessValue = data?.getFloatExtra("livenessValue", 0f) ?: 0f
-        val msg = data?.getStringExtra("msg")
+        val msg = data?.getStringExtra("message") ?: data?.getStringExtra("msg") ?: ""
         var faceBase64 = ""
 
         when (requestCode) {

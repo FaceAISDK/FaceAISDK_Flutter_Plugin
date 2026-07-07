@@ -99,7 +99,7 @@ CHECKOUT OPTIONS:
     :tag: 2026.07.01
 
 SPEC CHECKSUMS:
-  face_aisdk_flutter_plugin: 2e0b0fa0318853dd529b25792a4dab14343e4897
+  face_aisdk_flutter_plugin: c973f5e5d5587eed3deee81fb3e39d98c1e6cac6
   FaceAISDK_Core: 5cfad8a280e116439633ae86a0b6ad67572ea46e
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
