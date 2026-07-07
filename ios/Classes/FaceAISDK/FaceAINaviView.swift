@@ -26,8 +26,8 @@ struct FaceAINaviView: View {
                                 faceID: faceID,
                                 addFacePerformanceMode: 1,
                                 needShowConfirmDialog: true,
-                                onDismiss: { result, feature in
-                                    print("🎆 AddFace   Status: \(result), Feature: \(feature)")
+                                onDismiss: { result, feature, message in
+                                    print("🎆 AddFace   Status: \(result), Feature: \(feature), Message: \(message)")
                                 }
                             )) {
                                 MenuRowView(icon: "camera.viewfinder", title: "Add Face By Camera")
@@ -35,8 +35,8 @@ struct FaceAINaviView: View {
                             
                             NavigationLink(destination: AddFaceByImage(
                                 faceID: faceID,
-                                onDismiss: { result, feature in
-                                    print("🎆  AddFace  Status: \(result), Feature: \(feature ?? "")")
+                                onDismiss: { result, feature, message in
+                                    print("🎆  AddFace  Status: \(result), Feature: \(feature ?? ""), Message: \(message)")
                                 }
                             )) {
                                 MenuRowView(icon: "photo.on.rectangle.angled", title: "Add Face From Album")
@@ -54,8 +54,8 @@ struct FaceAINaviView: View {
                                 motionLivenessTimeOut: 11,
                                 motionLivenessSteps:2,
                                 
-                                onDismiss: {code, similarity, liveness in
-                                    print("🎆 Face Verify  Status: \(code), Similarity: \(similarity), Liveness: \(liveness)")
+                                onDismiss: {code, similarity, liveness, message in
+                                    print("🎆 Face Verify  Status: \(code), Similarity: \(similarity), Liveness: \(liveness), Message: \(message)")
                                 }
                             )) {
                                 MenuRowView(icon: "faceid", title: "Face Verify & Liveness")
@@ -66,8 +66,8 @@ struct FaceAINaviView: View {
                                 motionLiveness: "1,2,3,4,5",
                                 motionLivenessTimeOut: 5,
                                 motionLivenessSteps:2,
-                                onDismiss: { code,liveness in
-                                    print("🎆 Liveness Result: \(code), Liveness Score: \(liveness)")
+                                onDismiss: { code, liveness, message in
+                                    print("🎆 Liveness Result: \(code), Liveness Score: \(liveness), Message: \(message)")
                                 }
                             )) {
                                 MenuRowView(icon: "person.crop.circle.badge.checkmark", title: "ONLY Liveness Detection")

@@ -25,12 +25,12 @@ public class FaceAiSdkPlugin: NSObject, FlutterPlugin {
                        ?? (args?["needShowConfirmDialog"] as? Bool)
                        ?? false
 
-      FaceSDKSwiftManager.showAddFaceByCamera(faceId, performanceMode, needConfirm) { code, feature in
+      FaceSDKSwiftManager.showAddFaceByCamera(faceId, performanceMode, needConfirm) { code, feature, msg in
           var faceBase64 = ""
           if code.intValue != 0 {
               faceBase64 = FaceSDKSwiftManager.getFaceImageBase64(faceId)
           }
-          let res: [String: Any] = ["code": code, "faceFeature": feature, "faceBase64": faceBase64]
+          let res: [String: Any] = ["code": code, "faceFeature": feature, "faceBase64": faceBase64, "message": msg]
           print("FaceAiSdkPlugin addFaceBySDKCamera result: \(res)")
           result(res)
       }
@@ -51,7 +51,7 @@ public class FaceAiSdkPlugin: NSObject, FlutterPlugin {
       let motionLivenessTypes = args?["motionLivenessTypes"] as? String ?? "1,2,3,4,5"
       let motionLivenessTimeOut = args?["motionLivenessTimeOut"] as? NSNumber ?? 7
       let motionLivenessSteps = args?["motionLivenessSteps"] as? NSNumber ?? 2
-      FaceSDKSwiftManager.showFaceVerify(faceId, threshold, livenessType, motionLivenessTypes, motionLivenessTimeOut, motionLivenessSteps) { code, similarity, liveness in
+      FaceSDKSwiftManager.showFaceVerify(faceId, threshold, livenessType, motionLivenessTypes, motionLivenessTimeOut, motionLivenessSteps) { code, similarity, liveness, msg in
           var faceBase64 = ""
           if code.intValue == 1 {
               faceBase64 = FaceSDKSwiftManager.getFaceImageBase64("verifyBitmap")
@@ -60,7 +60,8 @@ public class FaceAiSdkPlugin: NSObject, FlutterPlugin {
               "code": code,
               "similarity": similarity,
               "livenessValue": liveness,
-              "faceBase64": faceBase64
+              "faceBase64": faceBase64,
+              "message": msg
           ]
           print("FaceAiSdkPlugin faceVerify result: \(res)")
           result(res)
@@ -71,7 +72,7 @@ public class FaceAiSdkPlugin: NSObject, FlutterPlugin {
       let motionLivenessTypes = args?["motionLivenessTypes"] as? String ?? "1,2,3,4,5"
       let motionLivenessTimeOut = args?["motionLivenessTimeOut"] as? NSNumber ?? 7
       let motionLivenessSteps = args?["motionLivenessSteps"] as? NSNumber ?? 2
-      FaceSDKSwiftManager.showLivenessVerify(livenessType, motionLivenessTypes, motionLivenessTimeOut, motionLivenessSteps) { code, liveness in
+      FaceSDKSwiftManager.showLivenessVerify(livenessType, motionLivenessTypes, motionLivenessTimeOut, motionLivenessSteps) { code, liveness, msg in
           var faceBase64 = ""
           if code.intValue == 10 {
               faceBase64 = FaceSDKSwiftManager.getFaceImageBase64("liveBitmap")
@@ -79,7 +80,8 @@ public class FaceAiSdkPlugin: NSObject, FlutterPlugin {
           let res: [String: Any] = [
               "code": code,
               "livenessValue": liveness,
-              "faceBase64": faceBase64
+              "faceBase64": faceBase64,
+              "message": msg
           ]
           print("FaceAiSdkPlugin livenessVerify result: \(res)")
           result(res)
