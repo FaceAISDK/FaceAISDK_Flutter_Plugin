@@ -96,7 +96,7 @@ public class FaceSDKSwiftManager: NSObject {
     }
 
     // MARK: - 1:1 人脸识别
-    public static func showFaceVerify(_ faceId: String, _ threshold: NSNumber, _ livenessType: NSNumber, _ motionLivenessTypes: String, _ motionLivenessTimeOut : NSNumber, _ motionLivenessSteps : NSNumber, _ callback: @escaping (NSNumber, NSNumber, NSNumber) -> Void) {
+    public static func showFaceVerify(_ faceId: String, _ threshold: NSNumber, _ livenessType: NSNumber, _ motionLivenessTypes: String, _ motionLivenessTimeOut : NSNumber, _ motionLivenessSteps : NSNumber, _ callback: @escaping (NSNumber, NSNumber, NSNumber,String) -> Void) {
         DispatchQueue.main.async {
             guard let topVC = self.getTopViewController() else { return }
 
@@ -126,7 +126,7 @@ public class FaceSDKSwiftManager: NSObject {
     }
 
     // MARK: - 活体检测
-    public static func showLivenessVerify(_ livenessType: NSNumber, _ motionLivenessTypes: String, _ motionLivenessTimeOut : NSNumber, _ motionLivenessSteps : NSNumber, _ showResultTips: Bool, _ callback: @escaping (NSNumber, NSNumber) -> Void) {
+    public static func showLivenessVerify(_ livenessType: NSNumber, _ motionLivenessTypes: String, _ motionLivenessTimeOut : NSNumber, _ motionLivenessSteps : NSNumber,  _ callback: @escaping (NSNumber, NSNumber,String) -> Void) {
         DispatchQueue.main.async {
             guard let topVC = self.getTopViewController() else { return }
 
@@ -137,12 +137,11 @@ public class FaceSDKSwiftManager: NSObject {
                 motionLiveness: motionLivenessTypes,
                 motionLivenessTimeOut: motionLivenessTimeOut.intValue,
                 motionLivenessSteps: motionLivenessSteps.intValue,
-                showResultTips: showResultTips,
                 onDismiss: { [weak topVC] (code: Int, liveness: Float) in
                     DispatchQueue.main.async {
                         ScreenBrightnessHelper.shared.restoreBrightness()
                         topVC?.dismiss(animated: true) {
-                            callback(NSNumber(value: code), NSNumber(value: liveness))
+                            callback(NSNumber(value: code), NSNumber(value: liveness), "")
                         }
                     }
                 }

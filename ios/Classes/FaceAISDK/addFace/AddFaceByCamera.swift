@@ -12,8 +12,8 @@ public struct AddFaceByCamera: View {
     let addFacePerformanceMode: Int //Alternate fields备用字段
     let needShowConfirmDialog: Bool
     
-    // callback Status , FaceFeature
-    let onDismiss: (Int, String) -> Void //status 0 cancel， 1 success
+    // callback Status , FaceFeature,message
+    let onDismiss: (Int, String,String) -> Void //status 0 cancel， 1 success
     
     var autoControlBrightness: Bool = true
     
@@ -44,7 +44,7 @@ public struct AddFaceByCamera: View {
         
         // Close Page, CallBack
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            onDismiss(1, viewModel.faceFeatureBySDKCamera)
+            onDismiss(1, viewModel.faceFeatureBySDKCamera,"Add Face Success")
             dismiss()
         }
         
@@ -55,7 +55,7 @@ public struct AddFaceByCamera: View {
             VStack(spacing: 20) {
                 HStack {
                     Button(action: {
-                        onDismiss(0, "")
+                        onDismiss(0, "","User Cancel")
                         dismiss()
                     }) {
                         Image(systemName: "chevron.left")

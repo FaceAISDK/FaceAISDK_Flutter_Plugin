@@ -136,7 +136,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     motionLivenessTypes: "1,2,3,4,5",
                     motionLivenessTimeOut: 7,
                     motionLivenessSteps: 2,
-                    showResultTips: true,
                   );
                   _updateDisplay(result, method: 'livenessVerify');
                 }),

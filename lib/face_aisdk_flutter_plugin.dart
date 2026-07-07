@@ -61,14 +61,12 @@ class FaceAiSdkFlutterPlugin {
   /// [motionLivenessTimeOut] 超时时间
   /// [motionLivenessSteps] 动作步数
   /// [allowMultiFaces] 是否允许多人脸 (仅 Android)
-  /// [showResultTips] 是否提示活体检测结果
   static Future<Map?> livenessVerify({
     int livenessType = 2,
     String motionLivenessTypes = "1,2,3,4,5",
     int motionLivenessTimeOut = 7,
     int motionLivenessSteps = 2,
     bool allowMultiFaces = true,
-    bool showResultTips = true,
   }) async {
     final Map? result = await _channel.invokeMethod('livenessVerify', {
       'livenessType': livenessType,
@@ -76,7 +74,6 @@ class FaceAiSdkFlutterPlugin {
       'motionLivenessTimeOut': motionLivenessTimeOut,
       'motionLivenessSteps': motionLivenessSteps,
       'allowMultiFaces': allowMultiFaces,
-      'showResultTips': showResultTips,
     });
     _printResult('livenessVerify', result);
     return result;

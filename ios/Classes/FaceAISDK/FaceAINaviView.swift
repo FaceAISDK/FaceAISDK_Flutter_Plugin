@@ -66,7 +66,6 @@ struct FaceAINaviView: View {
                                 motionLiveness: "1,2,3,4,5",
                                 motionLivenessTimeOut: 5,
                                 motionLivenessSteps:2,
-                                showResultTips: true,
                                 onDismiss: { code,liveness in
                                     print("🎆 Liveness Result: \(code), Liveness Score: \(liveness)")
                                 }
