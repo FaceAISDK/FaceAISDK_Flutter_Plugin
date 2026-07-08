@@ -20,37 +20,37 @@ public struct AddFaceByCamera: View {
     @Environment(\.dismiss) private var dismiss
     
     @StateObject private var viewModel: AddFaceByCameraModel = AddFaceByCameraModel()
-    
+
     // 根据状态码转换为对应的文字提示
     private func localizedTips(for code: Int) -> String {
         let key = "Face_Tips_Code_\(code)"
         let defaultValue = "Add Face Tips Code=\(code)"
         return NSLocalizedString(key, value: defaultValue, comment: "")
     }
-    
+
     private func speakTipsIfNeeded(for code: Int) {
         guard code != 0 && code != 1 && code != 11 else { return }
         TTSPlayer.shared.speak(localizedTips(for: code))
     }
-    
+
     // 统一处理人脸录入成功的逻辑
     private func saveFaceData() {
         // Optional
          if FaceImageManager.saveFaceImage(faceName: faceID, faceImage: viewModel.croppedFaceImage) {
              print("saveFaceImage success")
          }
-        
+
         // Save face feature 保存人脸特征信息，
         UserDefaults.standard.set(viewModel.faceFeatureBySDKCamera, forKey: faceID)
-        
+
         // Close Page, CallBack
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             onDismiss(1, viewModel.faceFeatureBySDKCamera,"Add Face Success")
             dismiss()
         }
-        
+
     }
-    
+
     public var body: some View {
         ZStack {
             VStack(spacing: 20) {
@@ -70,7 +70,7 @@ public struct AddFaceByCamera: View {
                 }
                 .padding(.horizontal, 2)
                 .padding(.top, 10)
-                
+
                 // Status Tips
                 Text(localizedTips(for: viewModel.sdkInterfaceTips.code))
                     .font(.system(size: 19).bold())
@@ -79,7 +79,7 @@ public struct AddFaceByCamera: View {
                     .foregroundColor(.white)
                     .background(Color.faceMain)
                     .cornerRadius(20)
-                
+
                 ZStack {
                     // Camera
                     FaceSDKCameraView(session: viewModel.captureSession, cameraSize: FaceCameraSize)
@@ -87,9 +87,11 @@ public struct AddFaceByCamera: View {
                         .clipShape(Circle())
                         .background(Circle().fill(Color.white))
                         .overlay(Circle().stroke(Color.gray, lineWidth: 1))
-                    
+
                     // Confirm Add Face
                     if viewModel.readyConfirmFace, needShowConfirmDialog {
+                        //Color.black.opacity(0.3).clipShape(Circle())
+
                         ConfirmAddFaceDialog(
                             viewModel: viewModel,
                             cameraSize: FaceCameraSize,
@@ -102,7 +104,7 @@ public struct AddFaceByCamera: View {
                 }
                 .frame(width: FaceCameraSize, height: FaceCameraSize)
                 .animation(.easeInOut(duration: 0.25), value: viewModel.readyConfirmFace)
-                
+
                 Spacer()
             }
             .padding()
@@ -110,7 +112,7 @@ public struct AddFaceByCamera: View {
             .background(Color.white.ignoresSafeArea())
             .navigationBarBackButtonHidden(true)
             .navigationBarHidden(true)
-            
+
             .onAppear {
                 if autoControlBrightness {
                     ScreenBrightnessHelper.shared.maximizeBrightness()
@@ -127,14 +129,14 @@ public struct AddFaceByCamera: View {
                 speakTipsIfNeeded(for: newValue)
             }
             .onChange(of: viewModel.readyConfirmFace) { _ in
-                guard viewModel.readyConfirmFace else { return }
+                print("viewModel.readyConfirmFace is now \(viewModel.readyConfirmFace)")
 
-                saveFaceData()
-//                 if needShowConfirmDialog {
-//                     print("show Confirm Dialog")
-//                 } else { //不需要确认框就直接保存提取人脸数据
-//                     saveFaceData()
-//                 }
+                guard viewModel.readyConfirmFace else { return }
+                if needShowConfirmDialog {
+                    print("show Confirm Dialog")
+                } else { //不需要确认框就直接保存提取人脸数据
+                    saveFaceData()
+                }
             }
         }
     }
