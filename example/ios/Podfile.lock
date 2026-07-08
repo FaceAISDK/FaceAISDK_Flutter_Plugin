@@ -1,9 +1,9 @@
 PODS:
   - face_aisdk_flutter_plugin (0.0.1):
-    - FaceAISDK_Core (= 2026.07.01)
+    - FaceAISDK_Core (= 2026.07.08)
     - Flutter
     - TensorFlowLiteSwift
-  - FaceAISDK_Core (2026.07.01):
+  - FaceAISDK_Core (2026.07.08):
     - GoogleMLKit/FaceDetection (= 9.0.0)
     - TensorFlowLiteSwift (= 2.17.0)
   - Flutter (1.0.0)
@@ -65,7 +65,7 @@ PODS:
 
 DEPENDENCIES:
   - face_aisdk_flutter_plugin (from `.symlinks/plugins/face_aisdk_flutter_plugin/ios`)
-  - FaceAISDK_Core (from `https://github.com/FaceAISDK/FaceAISDK_Core.git`, tag `2026.07.01`)
+  - FaceAISDK_Core (from `https://github.com/FaceAISDK/FaceAISDK_Core.git`, tag `2026.07.08`)
   - Flutter (from `Flutter`)
 
 SPEC REPOS:
@@ -89,18 +89,18 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/face_aisdk_flutter_plugin/ios"
   FaceAISDK_Core:
     :git: https://github.com/FaceAISDK/FaceAISDK_Core.git
-    :tag: 2026.07.01
+    :tag: 2026.07.08
   Flutter:
     :path: Flutter
 
 CHECKOUT OPTIONS:
   FaceAISDK_Core:
     :git: https://github.com/FaceAISDK/FaceAISDK_Core.git
-    :tag: 2026.07.01
+    :tag: 2026.07.08
 
 SPEC CHECKSUMS:
-  face_aisdk_flutter_plugin: c973f5e5d5587eed3deee81fb3e39d98c1e6cac6
-  FaceAISDK_Core: 5cfad8a280e116439633ae86a0b6ad67572ea46e
+  face_aisdk_flutter_plugin: 36c4ef715f40df905caedb428e1d1ff4f09d8d49
+  FaceAISDK_Core: 6e2ddb6f9333b8735ec89c0c7aa3d1171efe6bb3
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleMLKit: b1eee21a41c57704fe72483b15c85cb2c0cd7444
@@ -116,6 +116,6 @@ SPEC CHECKSUMS:
   TensorFlowLiteC: eac6d689a8d391d1b202dc59e3d9165ba64aaf73
   TensorFlowLiteSwift: 723fe42222815e72490c79feeff05305530de393
 
-PODFILE CHECKSUM: 2024174f455c102cb0f8d029d376edda5849b5cb
+PODFILE CHECKSUM: a9bf7b46b193edc3cdb12e64239f97060824205c
 
 COCOAPODS: 1.16.2
