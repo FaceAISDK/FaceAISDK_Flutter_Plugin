@@ -69,13 +69,13 @@ class _MyHomePageState extends State<MyHomePage> {
   void _updateDisplay(FaceAiSdkResult result, {String? method}) {
     if (method == 'faceVerify' || method == 'livenessVerify') {
        _resultDisplay = "code: ${result.code}\n"
-                        "msg: ${result.message}\n"
+                        "message: ${result.message}\n"
                         "${result.similarity != null ? 'similarity: ${result.similarity}\n' : ''}"
                         "liveness: ${result.livenessValue}\n"
                         "faceBase64: ${_truncate(result.faceBase64)}";
     } else {
        _resultDisplay = "code: ${result.code}\n"
-                        "msg: ${result.message}\n"
+                        "message: ${result.message}\n"
                         "feature: ${_truncate(result.faceFeature)}\n"
                         "faceBase64: ${_truncate(result.faceBase64)}";
     }

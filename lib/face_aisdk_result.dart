@@ -32,7 +32,7 @@ class FaceAiSdkResult {
   factory FaceAiSdkResult.fromMap(Map map) {
     return FaceAiSdkResult(
       code: map['code'] as int? ?? 0,
-      message: map['message'] as String? ?? map['msg'] as String?,
+      message: map['message'] as String?,
       similarity: (map['similarity'] as num?)?.toDouble(),
       livenessValue: (map['livenessValue'] as num?)?.toDouble(),
       faceBase64: map['faceBase64'] as String?,
