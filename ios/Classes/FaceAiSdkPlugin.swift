@@ -23,7 +23,7 @@ public class FaceAiSdkPlugin: NSObject, FlutterPlugin {
       // 兼容多种 Bool 传递方式
       let needConfirm = (args?["needShowConfirmDialog"] as? NSNumber)?.boolValue
                        ?? (args?["needShowConfirmDialog"] as? Bool)
-                       ?? false
+                       ?? true
 
       FaceSDKSwiftManager.showAddFaceByCamera(faceId, performanceMode, needConfirm) { code, feature, msg in
           var faceBase64 = ""

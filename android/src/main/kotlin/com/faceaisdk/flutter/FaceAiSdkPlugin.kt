@@ -45,7 +45,7 @@ class FaceAiSdkPlugin: FlutterPlugin, MethodChannel.MethodCallHandler, ActivityA
         val faceId = call.argument<String>("faceId")
         currentFaceId = faceId
         val performanceMode = call.argument<Int>("addFacePerformanceMode") ?: 0
-        val needShowConfirmDialog = call.argument<Boolean>("needShowConfirmDialog") ?: false
+        val needShowConfirmDialog = call.argument<Boolean>("needShowConfirmDialog") ?: true
 
         val intent = Intent(activity, AddFaceFeatureActivity::class.java)
          intent.putExtra("USER_FACE_ID_KEY", faceId)
@@ -173,7 +173,7 @@ class FaceAiSdkPlugin: FlutterPlugin, MethodChannel.MethodCallHandler, ActivityA
         var faceFeature = data?.getStringExtra("faceFeature") ?: ""
         var similarity = data?.getFloatExtra("similarity", 0f) ?: 0f
         var livenessValue = data?.getFloatExtra("livenessValue", 0f) ?: 0f
-        val msg = data?.getStringExtra("message") ?: data?.getStringExtra("msg") ?: ""
+        val msg = data?.getStringExtra("message") ?: ""
         var faceBase64 = ""
 
         when (requestCode) {
