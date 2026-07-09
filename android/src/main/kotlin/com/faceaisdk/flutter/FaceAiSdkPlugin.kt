@@ -45,7 +45,7 @@ class FaceAiSdkPlugin: FlutterPlugin, MethodChannel.MethodCallHandler, ActivityA
         val faceId = call.argument<String>("faceId")
         currentFaceId = faceId
         val performanceMode = call.argument<Int>("addFacePerformanceMode") ?: 0
-        val needShowConfirmDialog = call.argument<Boolean>("needShowConfirmDialog") ?: false
+        val needShowConfirmDialog = call.argument<Boolean>("needShowConfirmDialog") ?: true
 
         val intent = Intent(activity, AddFaceFeatureActivity::class.java)
          intent.putExtra("USER_FACE_ID_KEY", faceId)
@@ -112,7 +112,7 @@ class FaceAiSdkPlugin: FlutterPlugin, MethodChannel.MethodCallHandler, ActivityA
         val faceId = call.argument<String>("faceId")
         if (faceId != null && activity != null) {
             FaceSDKConfig.deleteFaceVerifyData(activity!!, faceId)
-            result.success(mapOf("code" to 1, "msg" to "Success"))
+            result.success(mapOf("code" to 1, "message" to "Success"))
         } else {
             result.error("INVALID_ARGUMENT", "faceId is null", null)
         }
@@ -130,7 +130,7 @@ class FaceAiSdkPlugin: FlutterPlugin, MethodChannel.MethodCallHandler, ActivityA
         val faceId = call.argument<String>("faceId")
         val feature = call.argument<String>("feature")
         // FaceSDKConfig.insertFaceFeature(activity!!, faceId, feature)
-        result.success(mapOf("code" to 1, "msg" to "Success"))
+        result.success(mapOf("code" to 1, "message" to "Success"))
       }
       "getFaceFeature" -> {
         val faceId = call.argument<String>("faceId")
@@ -173,7 +173,7 @@ class FaceAiSdkPlugin: FlutterPlugin, MethodChannel.MethodCallHandler, ActivityA
         var faceFeature = data?.getStringExtra("faceFeature") ?: ""
         var similarity = data?.getFloatExtra("similarity", 0f) ?: 0f
         var livenessValue = data?.getFloatExtra("livenessValue", 0f) ?: 0f
-        val msg = data?.getStringExtra("msg")
+        val message = data?.getStringExtra("message") ?: ""
         var faceBase64 = ""
 
         when (requestCode) {
@@ -200,7 +200,7 @@ class FaceAiSdkPlugin: FlutterPlugin, MethodChannel.MethodCallHandler, ActivityA
         
         val resultMap = mapOf(
             "code" to code,
-            "message" to msg,
+            "message" to message,
             "similarity" to similarity.toDouble(),
             "livenessValue" to livenessValue.toDouble(),
             "faceBase64" to faceBase64,

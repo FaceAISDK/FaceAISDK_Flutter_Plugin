@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:face_aisdk_flutter_plugin/face_aisdk_flutter_plugin.dart';
@@ -12,19 +11,19 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       debugShowCheckedModeBanner: false,
       // 1. 配置多语言支持
-      localizationsDelegates: const [
+      localizationsDelegates: [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: const [
+      supportedLocales: [
         Locale('en', 'US'),
         Locale('zh', 'CN'),
       ],
-      home: const MyHomePage(),
+      home: MyHomePage(),
     );
   }
 }
@@ -67,26 +66,18 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  void _updateDisplay(Map? result, {String? method}) {
-    if (result == null) {
-      setState(() => _resultDisplay = t('result_empty'));
-      return;
-    }
-
+  void _updateDisplay(FaceAiSdkResult result, {String? method}) {
     if (method == 'faceVerify' || method == 'livenessVerify') {
-       _resultDisplay = "code: ${result['code']}\n"
-                        "msg: ${result['message'] ?? result['msg']}\n"
-                        "${result.containsKey('similarity') ? 'similarity: ${result['similarity']}\n' : ''}"
-                        "liveness: ${result['livenessValue']}\n"
-                        "faceBase64: ${_truncate(result['faceBase64'])}";
+       _resultDisplay = "code: ${result.code}\n"
+                        "message: ${result.message}\n"
+                        "${result.similarity != null ? 'similarity: ${result.similarity}\n' : ''}"
+                        "liveness: ${result.livenessValue}\n"
+                        "faceBase64: ${_truncate(result.faceBase64)}";
     } else {
-      Map<String, dynamic> displayMap = Map<String, dynamic>.from(result);
-      displayMap.forEach((key, value) {
-        if ((key == 'faceBase64' || key == 'faceFeature') && value is String && value.length > 50) {
-          displayMap[key] = "${value.substring(0, 20)}...${value.substring(value.length - 20)}";
-        }
-      });
-      _resultDisplay = const JsonEncoder.withIndent('  ').convert(displayMap);
+       _resultDisplay = "code: ${result.code}\n"
+                        "message: ${result.message}\n"
+                        "feature: ${_truncate(result.faceFeature)}\n"
+                        "faceBase64: ${_truncate(result.faceBase64)}";
     }
     setState(() {});
   }

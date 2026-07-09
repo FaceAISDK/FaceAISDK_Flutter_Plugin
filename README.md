@@ -82,7 +82,6 @@ final result = await FaceAiSdkFlutterPlugin.livenessVerify(
   motionLivenessTimeOut: 7,    // Timeout in seconds [3, 10]
   motionLivenessSteps: 2,      // Actions required [1, 2]
   allowMultiFaces: true,       // Allow multiple faces (Android only)
-  showResultTips: true,        // Show result toast/tips
 );
 ```
 
@@ -178,7 +177,6 @@ final result = await FaceAiSdkFlutterPlugin.livenessVerify(
   motionLivenessTimeOut: 7,     // 超时时间 [3, 10]
   motionLivenessSteps: 2,       // 动作步数 [1, 2]
   allowMultiFaces: true,        // 是否允许多人脸 (仅 Android)
-  showResultTips: true,         // 是否显示结果提示
 );
 ```
 

@@ -1,8 +1,12 @@
 import Flutter
 import UIKit
+import FaceAISDK_Core
 
 public class FaceAiSdkPlugin: NSObject, FlutterPlugin {
   public static func register(with registrar: FlutterPluginRegistrar) {
+    // Initialize FaceAISDK
+    FaceAISDK.initSDK()
+
     let channel = FlutterMethodChannel(name: "face_aisdk_flutter_plugin", binaryMessenger: registrar.messenger())
     let instance = FaceAiSdkPlugin()
     registrar.addMethodCallDelegate(instance, channel: channel)
@@ -20,19 +24,13 @@ public class FaceAiSdkPlugin: NSObject, FlutterPlugin {
       let faceId = args?["faceId"] as? String ?? ""
       let performanceMode = args?["addFacePerformanceMode"] as? NSNumber ?? 0
 
-      //let needConfirm = args?["needShowConfirmDialog"] as? Bool ?? false
-
-      // 兼容多种 Bool 传递方式
-      let needConfirm = (args?["needShowConfirmDialog"] as? NSNumber)?.boolValue
-                       ?? (args?["needShowConfirmDialog"] as? Bool)
-                       ?? false
-
-      FaceSDKSwiftManager.showAddFaceByCamera(faceId, performanceMode, needConfirm) { code, feature in
+      let needConfirm = args?["needShowConfirmDialog"] as? Bool ?? true
+      FaceSDKSwiftManager.showAddFaceByCamera(faceId, performanceMode, needConfirm) { code, feature, message in
           var faceBase64 = ""
           if code.intValue != 0 {
               faceBase64 = FaceSDKSwiftManager.getFaceImageBase64(faceId)
           }
-          let res: [String: Any] = ["code": code, "faceFeature": feature, "faceBase64": faceBase64]
+          let res: [String: Any] = ["code": code, "faceFeature": feature, "faceBase64": faceBase64, "message": message]
           print("FaceAiSdkPlugin addFaceBySDKCamera result: \(res)")
           result(res)
       }
@@ -40,8 +38,8 @@ public class FaceAiSdkPlugin: NSObject, FlutterPlugin {
     case "addFaceBySDKImage":
       let faceId = args?["faceId"] as? String ?? ""
       let imageBase64 = args?["imageBase64"] as? String ?? ""
-      FaceSDKSwiftManager.addFaceByBase64(faceId, imageBase64) { code, feature, msg in
-          let res: [String: Any] = ["code": code, "faceFeature": feature, "message": msg]
+      FaceSDKSwiftManager.addFaceByBase64(faceId, imageBase64) { code, feature, message in
+          let res: [String: Any] = ["code": code, "faceFeature": feature, "message": message]
           print("FaceAiSdkPlugin addFaceBySDKImage result: \(res)")
           result(res)
       }
@@ -53,7 +51,7 @@ public class FaceAiSdkPlugin: NSObject, FlutterPlugin {
       let motionLivenessTypes = args?["motionLivenessTypes"] as? String ?? "1,2,3,4,5"
       let motionLivenessTimeOut = args?["motionLivenessTimeOut"] as? NSNumber ?? 7
       let motionLivenessSteps = args?["motionLivenessSteps"] as? NSNumber ?? 2
-      FaceSDKSwiftManager.showFaceVerify(faceId, threshold, livenessType, motionLivenessTypes, motionLivenessTimeOut, motionLivenessSteps) { code, similarity, liveness in
+      FaceSDKSwiftManager.showFaceVerify(faceId, threshold, livenessType, motionLivenessTypes, motionLivenessTimeOut, motionLivenessSteps) { code, similarity, liveness, message in
           var faceBase64 = ""
           if code.intValue == 1 {
               faceBase64 = FaceSDKSwiftManager.getFaceImageBase64("verifyBitmap")
@@ -62,7 +60,8 @@ public class FaceAiSdkPlugin: NSObject, FlutterPlugin {
               "code": code,
               "similarity": similarity,
               "livenessValue": liveness,
-              "faceBase64": faceBase64
+              "faceBase64": faceBase64,
+              "message": message
           ]
           print("FaceAiSdkPlugin faceVerify result: \(res)")
           result(res)
@@ -73,8 +72,7 @@ public class FaceAiSdkPlugin: NSObject, FlutterPlugin {
       let motionLivenessTypes = args?["motionLivenessTypes"] as? String ?? "1,2,3,4,5"
       let motionLivenessTimeOut = args?["motionLivenessTimeOut"] as? NSNumber ?? 7
       let motionLivenessSteps = args?["motionLivenessSteps"] as? NSNumber ?? 2
-      let showResultTips = args?["showResultTips"] as? Bool ?? true
-      FaceSDKSwiftManager.showLivenessVerify(livenessType, motionLivenessTypes, motionLivenessTimeOut, motionLivenessSteps, showResultTips) { code, liveness in
+      FaceSDKSwiftManager.showLivenessVerify(livenessType, motionLivenessTypes, motionLivenessTimeOut, motionLivenessSteps) { code, liveness, message in
           var faceBase64 = ""
           if code.intValue == 10 {
               faceBase64 = FaceSDKSwiftManager.getFaceImageBase64("liveBitmap")
@@ -82,7 +80,8 @@ public class FaceAiSdkPlugin: NSObject, FlutterPlugin {
           let res: [String: Any] = [
               "code": code,
               "livenessValue": liveness,
-              "faceBase64": faceBase64
+              "faceBase64": faceBase64,
+              "message": message
           ]
           print("FaceAiSdkPlugin livenessVerify result: \(res)")
           result(res)
@@ -92,14 +91,14 @@ public class FaceAiSdkPlugin: NSObject, FlutterPlugin {
       let faceId = args?["faceId"] as? String ?? ""
       FaceSDKSwiftManager.deleteFaceFeature(faceId)
       print("FaceAiSdkPlugin deleteFaceFeature faceId: \(faceId)")
-      result(true)
+      result(["code": 1, "message": "Success"])
 
     case "insertFaceFeature":
       let faceId = args?["faceId"] as? String ?? ""
       let feature = args?["feature"] as? String ?? ""
-      FaceSDKSwiftManager.insertFaceFeature(faceId, feature) { code, msg in
-          print("FaceAiSdkPlugin insertFaceFeature result: \(code), msg: \(msg)")
-          result(code.boolValue)
+      FaceSDKSwiftManager.insertFaceFeature(faceId, feature) { code, message in
+          print("FaceAiSdkPlugin insertFaceFeature result: \(code), message: \(message)")
+          result(["code": code, "message": message])
       }
 
     case "getFaceFeature":

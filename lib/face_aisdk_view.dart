@@ -9,11 +9,13 @@ typedef FaceAiSdkViewCreatedCallback = void Function(FaceAiSdkController control
 class FaceAiSdkView extends StatefulWidget {
   final FaceAiSdkViewCreatedCallback? onViewCreated;
   final Map<String, dynamic>? creationParams;
+  final bool needShowConfirmDialog;
 
   const FaceAiSdkView({
     Key? key,
     this.onViewCreated,
     this.creationParams,
+    this.needShowConfirmDialog = true,
   }) : super(key: key);
 
   @override
@@ -25,6 +27,11 @@ class _FaceAiSdkViewState extends State<FaceAiSdkView> {
   Widget build(BuildContext context) {
     const String viewType = 'com.faceaisdk/view';
 
+    final Map<String, dynamic> params = widget.creationParams ?? <String, dynamic>{};
+    if (!params.containsKey('needShowConfirmDialog')) {
+      params['needShowConfirmDialog'] = widget.needShowConfirmDialog;
+    }
+
     if (defaultTargetPlatform == TargetPlatform.android) {
       return PlatformViewLink(
         viewType: viewType,
@@ -35,19 +42,19 @@ class _FaceAiSdkViewState extends State<FaceAiSdkView> {
             hitTestBehavior: PlatformViewHitTestBehavior.opaque,
           );
         },
-        onCreatePlatformView: (params) {
+        onCreatePlatformView: (params_view) {
           return PlatformViewsService.initSurfaceAndroidView(
-            id: params.id,
+            id: params_view.id,
             viewType: viewType,
             layoutDirection: TextDirection.ltr,
-            creationParams: widget.creationParams,
+            creationParams: params,
             creationParamsCodec: const StandardMessageCodec(),
             onFocus: () {
-              params.onFocusChanged(true);
+              params_view.onFocusChanged(true);
             },
           )
             ..addOnPlatformViewCreatedListener((int id) {
-              params.onPlatformViewCreated(id);
+              params_view.onPlatformViewCreated(id);
               if (widget.onViewCreated != null) {
                 widget.onViewCreated!(FaceAiSdkController(id));
               }
@@ -63,7 +70,7 @@ class _FaceAiSdkViewState extends State<FaceAiSdkView> {
             widget.onViewCreated!(FaceAiSdkController(id));
           }
         },
-        creationParams: widget.creationParams,
+        creationParams: params,
         creationParamsCodec: const StandardMessageCodec(),
       );
     }
