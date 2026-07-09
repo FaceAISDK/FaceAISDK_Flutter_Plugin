@@ -1,8 +1,12 @@
 import Flutter
 import UIKit
+import FaceAISDK_Core
 
 public class FaceAiSdkPlugin: NSObject, FlutterPlugin {
   public static func register(with registrar: FlutterPluginRegistrar) {
+    // Initialize FaceAISDK
+    FaceAISDK.initSDK()
+
     let channel = FlutterMethodChannel(name: "face_aisdk_flutter_plugin", binaryMessenger: registrar.messenger())
     let instance = FaceAiSdkPlugin()
     registrar.addMethodCallDelegate(instance, channel: channel)
