@@ -1,4 +1,8 @@
-# face_aisdk_flutter_plugin
+# facesdk_flutter_plugin
+
+# new here https://github.com/FaceAISDK/FaceRecognition_Flutter
+# new here https://github.com/FaceAISDK/FaceRecognition_Flutter
+
 
 [English](#english) | [简体中文](#chinese)
 
@@ -97,6 +101,8 @@ Use `FaceAiSdkResultCode` to handle different outcomes:
 
 <a name="chinese"></a>
 # face_aisdk_flutter_plugin (简体中文)
+# new here https://github.com/FaceAISDK/FaceRecognition_Flutter
+# new here https://github.com/FaceAISDK/FaceRecognition_Flutter
 
 适用于 FaceAISDK 离线人脸识别的 Flutter 插件。支持 Platform View（内置 UI 模式）和直接 API 调用。
 
