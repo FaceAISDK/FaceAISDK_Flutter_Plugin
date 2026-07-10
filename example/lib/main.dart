@@ -137,7 +137,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   _updateDisplay(res);
                 }),
                 _buildMenuButton(t('btn_insert'), () async {
-                  final res = await FaceAiSdkFlutterPlugin.insertFaceFeature(faceId: _testFaceId, feature: "...");
+                  final res = await FaceAiSdkFlutterPlugin.insertFaceFeature(faceId: _testFaceId, feature: "your 1024 face feature");
                   _updateDisplay(res);
                 }),
                 _buildMenuButton(t('btn_add_image'), () async {
@@ -177,10 +177,12 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                   ),
                 ),
-                const Divider(color: Colors.purple),
-                const Text('Email: FaceAISDK.Service@gmail.com', style: TextStyle(color: Colors.black54, fontSize: 12)),
               ],
             ),
+          ),
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 5),
+            child: Text('Email: FaceAISDK.Service@gmail.com', style: TextStyle(color: Colors.black54, fontSize: 12)),
           ),
         ],
       ),

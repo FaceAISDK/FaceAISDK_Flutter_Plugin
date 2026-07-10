@@ -27,7 +27,7 @@ public class FaceAiSdkPlugin: NSObject, FlutterPlugin {
       let needConfirm = args?["needShowConfirmDialog"] as? Bool ?? true
       FaceSDKSwiftManager.showAddFaceByCamera(faceId, performanceMode, needConfirm) { code, feature, message in
           var faceBase64 = ""
-          if code.intValue != 0 {
+          if code.intValue == 1 {
               faceBase64 = FaceSDKSwiftManager.getFaceImageBase64(faceId)
           }
           let res: [String: Any] = ["code": code, "faceFeature": feature, "faceBase64": faceBase64, "message": message]
@@ -97,19 +97,42 @@ public class FaceAiSdkPlugin: NSObject, FlutterPlugin {
       let faceId = args?["faceId"] as? String ?? ""
       let feature = args?["feature"] as? String ?? ""
       FaceSDKSwiftManager.insertFaceFeature(faceId, feature) { code, message in
-          print("FaceAiSdkPlugin insertFaceFeature result: \(code), message: \(message)")
-          result(["code": code, "message": message])
+          let res: [String: Any] = ["code": code, "message": message, "faceId": faceId]
+          print("FaceAiSdkPlugin insertFaceFeature result: \(res)")
+          result(res)
       }
 
     case "getFaceFeature":
       let faceId = args?["faceId"] as? String ?? ""
-      result(FaceSDKSwiftManager.getiOSFaceFeature(faceId))
+      let feature = FaceSDKSwiftManager.getiOSFaceFeature(faceId)
+      var code = 0
+      var message = "Face Feature not exist"
+      if !feature.isEmpty {
+          if feature.count == 1024 {
+              code = 1
+              message = "Face Feature exist"
+          } else {
+              message = "Face Feature length should be 1024"
+          }
+      }
+      let res: [String: Any] = ["code": code, "message": message, "faceId": faceId, "faceFeature": feature]
+      result(res)
 
     case "isFaceExist":
       let faceId = args?["faceId"] as? String ?? ""
-      let exists = FaceSDKSwiftManager.isFaceFeatureExist(faceId)
-      print("FaceAiSdkPlugin isFaceExist: \(exists)")
-      result(exists)
+      let feature = FaceSDKSwiftManager.getiOSFaceFeature(faceId)
+      var code = 0
+      var message = "Face Feature not exist"
+      if !feature.isEmpty {
+          if feature.count == 1024 {
+              code = 1
+              message = "Face Feature exist"
+          } else {
+              message = "Face Feature length should be 1024"
+          }
+      }
+      let res: [String: Any] = ["code": code, "message": message, "faceId": faceId, "faceFeature": feature]
+      result(res)
 
     case "getFaceImageBase64":
       let faceId = args?["faceId"] as? String ?? ""
