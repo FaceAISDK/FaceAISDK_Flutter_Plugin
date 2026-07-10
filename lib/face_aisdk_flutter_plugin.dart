@@ -135,10 +135,12 @@ class FaceAiSdkFlutterPlugin {
 
   /// 检查人脸是否存在
   static Future<bool> isFaceExist(String faceId) async {
-    final bool exists = await _channel.invokeMethod('isFaceExist', {
+    final dynamic result = await _channel.invokeMethod('isFaceExist', {
       'faceId': faceId,
     });
-    return exists;
+    if (result is bool) return result;
+    if (result is Map) return result['code'] == 1;
+    return false;
   }
 
   /// 获取人脸图片 Base64
